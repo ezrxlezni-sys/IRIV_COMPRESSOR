@@ -1,0 +1,2042 @@
+[
+    {
+        "id": "6d43a88e8d79bfa9",
+        "type": "tab",
+        "label": "Main Flow",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "82f168ab6df5f777",
+        "type": "debug",
+        "z": "6d43a88e8d79bfa9",
+        "name": "DB Flow Meter",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1340,
+        "y": 680,
+        "wires": []
+    },
+    {
+        "id": "bb144b0ac803b2d9",
+        "type": "modbus-getter",
+        "z": "6d43a88e8d79bfa9",
+        "name": "Temperature PD500",
+        "showStatusActivities": false,
+        "showErrors": true,
+        "showWarnings": false,
+        "logIOActivities": false,
+        "unitid": "1",
+        "dataType": "HoldingRegister",
+        "adr": "34",
+        "quantity": "2",
+        "server": "de33c1861c88b866",
+        "useIOFile": false,
+        "ioFile": "",
+        "useIOForPayload": false,
+        "emptyMsgOnFail": false,
+        "keepMsgProperties": false,
+        "delayOnStart": true,
+        "startDelayTime": "1",
+        "x": 640,
+        "y": 80,
+        "wires": [
+            [
+                "940a8a0d96da194c",
+                "0337bb2e8d32c2fa"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "3b2692185d6a57a8",
+        "type": "inject",
+        "z": "6d43a88e8d79bfa9",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "1",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "10",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 195,
+        "y": 77.7398681640625,
+        "wires": [
+            [
+                "bb144b0ac803b2d9"
+            ]
+        ]
+    },
+    {
+        "id": "5f65672b5b792f7d",
+        "type": "debug",
+        "z": "6d43a88e8d79bfa9",
+        "name": "DB PD500 Pressure Sensor",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1380,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "940a8a0d96da194c",
+        "type": "function",
+        "z": "6d43a88e8d79bfa9",
+        "name": "Byte Swap CDAB",
+        "func": "let r = msg.payload?.data || msg.payload;\n\nif (!Array.isArray(r) || r.length < 2) {\n    node.warn(\"No 2 registers received: \" + JSON.stringify(msg.payload));\n    return null;\n}\n\nlet buf = Buffer.alloc(4);\n\n// CDAB / word swap\nbuf.writeUInt16BE(r[1], 0);\nbuf.writeUInt16BE(r[0], 2);\n\nmsg.payload = (buf.readFloatBE(0).toFixed(2));\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 950,
+        "y": 80,
+        "wires": [
+            [
+                "5f65672b5b792f7d",
+                "b03c84be99079a7e"
+            ]
+        ]
+    },
+    {
+        "id": "11044d048b077f66",
+        "type": "modbus-getter",
+        "z": "6d43a88e8d79bfa9",
+        "name": "Pressure PD500",
+        "showStatusActivities": false,
+        "showErrors": true,
+        "showWarnings": false,
+        "logIOActivities": false,
+        "unitid": "1",
+        "dataType": "HoldingRegister",
+        "adr": "36",
+        "quantity": "2",
+        "server": "de33c1861c88b866",
+        "useIOFile": false,
+        "ioFile": "",
+        "useIOForPayload": false,
+        "emptyMsgOnFail": false,
+        "keepMsgProperties": false,
+        "delayOnStart": true,
+        "startDelayTime": "1",
+        "x": 620,
+        "y": 160,
+        "wires": [
+            [
+                "3dfe2ba2e5a96a3f",
+                "6cb491e0b4e2fbb5"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "0337bb2e8d32c2fa",
+        "type": "delay",
+        "z": "6d43a88e8d79bfa9",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "0.1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 390,
+        "y": 160,
+        "wires": [
+            [
+                "11044d048b077f66"
+            ]
+        ]
+    },
+    {
+        "id": "e241e5e510f10a10",
+        "type": "modbus-getter",
+        "z": "6d43a88e8d79bfa9",
+        "name": "Flowmeter Flow Rate",
+        "showStatusActivities": false,
+        "showErrors": true,
+        "showWarnings": false,
+        "logIOActivities": false,
+        "unitid": "11",
+        "dataType": "HoldingRegister",
+        "adr": "2",
+        "quantity": "2",
+        "server": "de33c1861c88b866",
+        "useIOFile": false,
+        "ioFile": "",
+        "useIOForPayload": false,
+        "emptyMsgOnFail": false,
+        "keepMsgProperties": false,
+        "delayOnStart": false,
+        "startDelayTime": "1",
+        "x": 640,
+        "y": 300,
+        "wires": [
+            [
+                "522b26b9950532a6",
+                "6e65726aae8b3d80"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "b8a4f518acb29766",
+        "type": "modbus-getter",
+        "z": "6d43a88e8d79bfa9",
+        "name": "Flowmeter Flow Velocity",
+        "showStatusActivities": false,
+        "showErrors": true,
+        "showWarnings": false,
+        "logIOActivities": false,
+        "unitid": "11",
+        "dataType": "HoldingRegister",
+        "adr": "4",
+        "quantity": "2",
+        "server": "de33c1861c88b866",
+        "useIOFile": false,
+        "ioFile": "",
+        "useIOForPayload": false,
+        "emptyMsgOnFail": false,
+        "keepMsgProperties": false,
+        "delayOnStart": false,
+        "startDelayTime": "1",
+        "x": 650,
+        "y": 380,
+        "wires": [
+            [
+                "c9600402694f248a",
+                "caae067aa07c6cce"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "a48f8efc5078db86",
+        "type": "modbus-getter",
+        "z": "6d43a88e8d79bfa9",
+        "name": "Flowmeter Sensor Voltage",
+        "showStatusActivities": false,
+        "showErrors": true,
+        "showWarnings": false,
+        "logIOActivities": false,
+        "unitid": "11",
+        "dataType": "HoldingRegister",
+        "adr": "6",
+        "quantity": "2",
+        "server": "de33c1861c88b866",
+        "useIOFile": false,
+        "ioFile": "",
+        "useIOForPayload": false,
+        "emptyMsgOnFail": false,
+        "keepMsgProperties": false,
+        "delayOnStart": false,
+        "startDelayTime": "1",
+        "x": 660,
+        "y": 460,
+        "wires": [
+            [
+                "086b2fd9f0f59548",
+                "3ef0b8e1f03d5d85"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "7b7566a15f068a15",
+        "type": "modbus-getter",
+        "z": "6d43a88e8d79bfa9",
+        "name": "Flowmeter Upper Limit >=100",
+        "showStatusActivities": false,
+        "showErrors": true,
+        "showWarnings": false,
+        "logIOActivities": false,
+        "unitid": "11",
+        "dataType": "HoldingRegister",
+        "adr": "8",
+        "quantity": "2",
+        "server": "de33c1861c88b866",
+        "useIOFile": false,
+        "ioFile": "",
+        "useIOForPayload": false,
+        "emptyMsgOnFail": false,
+        "keepMsgProperties": false,
+        "delayOnStart": false,
+        "startDelayTime": "1",
+        "x": 670,
+        "y": 540,
+        "wires": [
+            [
+                "9f63bb9fd2cdd1bb",
+                "82fe9259d01d2b81"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "498b854b80391063",
+        "type": "modbus-getter",
+        "z": "6d43a88e8d79bfa9",
+        "name": "Flowmeter Lower Limit < 100",
+        "showStatusActivities": false,
+        "showErrors": true,
+        "showWarnings": false,
+        "logIOActivities": false,
+        "unitid": "11",
+        "dataType": "HoldingRegister",
+        "adr": "10",
+        "quantity": "2",
+        "server": "de33c1861c88b866",
+        "useIOFile": false,
+        "ioFile": "",
+        "useIOForPayload": false,
+        "emptyMsgOnFail": false,
+        "keepMsgProperties": false,
+        "delayOnStart": false,
+        "startDelayTime": "1",
+        "x": 660,
+        "y": 620,
+        "wires": [
+            [
+                "d2c862ebc691299b",
+                "8977010910b3a77d"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "3dfe2ba2e5a96a3f",
+        "type": "delay",
+        "z": "6d43a88e8d79bfa9",
+        "name": "",
+        "pauseType": "rate",
+        "timeout": "15",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "5",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": true,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 400,
+        "y": 300,
+        "wires": [
+            [
+                "e241e5e510f10a10"
+            ]
+        ]
+    },
+    {
+        "id": "522b26b9950532a6",
+        "type": "function",
+        "z": "6d43a88e8d79bfa9",
+        "name": "Swap byte CDAB",
+        "func": "let r = msg.payload.data || msg.payload;\n\n/*\nif (!Array.isArray(r) || r.length < 2) {\n    node.warn(\"Need 2 registers\");\n    return null;\n}\n\nnode.warn(r);\n*/\n\n// Split registers into bytes\nlet b0 = (r[0] >> 8) & 0xFF;\nlet b1 = r[0] & 0xFF;\nlet b2 = (r[1] >> 8) & 0xFF;\nlet b3 = r[1] & 0xFF;\n\n// EXACT same as your old working code\nlet buf = Buffer.from([b2, b3, b0, b1]);\n\nmsg.payload = Number(buf.readFloatBE(0).toFixed(2));\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 950,
+        "y": 300,
+        "wires": [
+            [
+                "82f168ab6df5f777",
+                "eeb72b27a34e2617"
+            ]
+        ]
+    },
+    {
+        "id": "c9600402694f248a",
+        "type": "function",
+        "z": "6d43a88e8d79bfa9",
+        "name": "Swap byte CDAB",
+        "func": "let r = msg.payload.data || msg.payload;\n\n/*\nif (!Array.isArray(r) || r.length < 2) {\n    node.warn(\"Need 2 registers\");\n    return null;\n}\n\nnode.warn(r);\n*/\n\n// Split registers into bytes\nlet b0 = (r[0] >> 8) & 0xFF;\nlet b1 = r[0] & 0xFF;\nlet b2 = (r[1] >> 8) & 0xFF;\nlet b3 = r[1] & 0xFF;\n\n// EXACT same as your old working code\nlet buf = Buffer.from([b2, b3, b0, b1]);\n\nmsg.payload = Number(buf.readFloatBE(0).toFixed(2));\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 950,
+        "y": 380,
+        "wires": [
+            [
+                "82f168ab6df5f777",
+                "7e41258ae8183840"
+            ]
+        ]
+    },
+    {
+        "id": "086b2fd9f0f59548",
+        "type": "function",
+        "z": "6d43a88e8d79bfa9",
+        "name": "Swap byte CDAB",
+        "func": "let r = msg.payload.data || msg.payload;\n\n/*\nif (!Array.isArray(r) || r.length < 2) {\n    node.warn(\"Need 2 registers\");\n    return null;\n}\n\nnode.warn(r);\n*/\n\n// Split registers into bytes\nlet b0 = (r[0] >> 8) & 0xFF;\nlet b1 = r[0] & 0xFF;\nlet b2 = (r[1] >> 8) & 0xFF;\nlet b3 = r[1] & 0xFF;\n\n// EXACT same as your old working code\nlet buf = Buffer.from([b2, b3, b0, b1]);\n\nmsg.payload = Number(buf.readFloatBE(0).toFixed(2));\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 950,
+        "y": 460,
+        "wires": [
+            [
+                "82f168ab6df5f777",
+                "f195ada33fbce6c3"
+            ]
+        ]
+    },
+    {
+        "id": "9f63bb9fd2cdd1bb",
+        "type": "function",
+        "z": "6d43a88e8d79bfa9",
+        "name": "Swap byte CDAB",
+        "func": "let r = msg.payload.data || msg.payload;\n\n/*\nif (!Array.isArray(r) || r.length < 2) {\n    node.warn(\"Need 2 registers\");\n    return null;\n}\n\nnode.warn(r);\n*/\n\n// Split registers into bytes\nlet b0 = (r[0] >> 8) & 0xFF;\nlet b1 = r[0] & 0xFF;\nlet b2 = (r[1] >> 8) & 0xFF;\nlet b3 = r[1] & 0xFF;\n\n// EXACT same as your old working code\nlet buf = Buffer.from([b2, b3, b0, b1]);\n\nmsg.payload = Number(buf.readFloatBE(0).toFixed(2));\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 950,
+        "y": 540,
+        "wires": [
+            [
+                "82f168ab6df5f777",
+                "8d822b0083b078a7"
+            ]
+        ]
+    },
+    {
+        "id": "d2c862ebc691299b",
+        "type": "function",
+        "z": "6d43a88e8d79bfa9",
+        "name": "Swap byte CDAB",
+        "func": "let r = msg.payload.data || msg.payload;\n\n/*\nif (!Array.isArray(r) || r.length < 2) {\n    node.warn(\"Need 2 registers\");\n    return null;\n}\n\nnode.warn(r);\n*/\n\n// Split registers into bytes\nlet b0 = (r[0] >> 8) & 0xFF;\nlet b1 = r[0] & 0xFF;\nlet b2 = (r[1] >> 8) & 0xFF;\nlet b3 = r[1] & 0xFF;\n\n// EXACT same as your old working code\nlet buf = Buffer.from([b2, b3, b0, b1]);\n\nmsg.payload = Number(buf.readFloatBE(0).toFixed(2));\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 950,
+        "y": 620,
+        "wires": [
+            [
+                "82f168ab6df5f777",
+                "9af3deea57906036"
+            ]
+        ]
+    },
+    {
+        "id": "b03c84be99079a7e",
+        "type": "ui_gauge",
+        "z": "6d43a88e8d79bfa9",
+        "name": "",
+        "group": "d32e9818ed320a1a",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "Temperature",
+        "label": "°C",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "100",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 1330,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "397bdebd4b758bbd",
+        "type": "ui_gauge",
+        "z": "6d43a88e8d79bfa9",
+        "name": "",
+        "group": "d32e9818ed320a1a",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "Pressure",
+        "label": "Bar",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "14",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 1320,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "eeb72b27a34e2617",
+        "type": "ui_gauge",
+        "z": "6d43a88e8d79bfa9",
+        "name": "",
+        "group": "8664b5a968affcfb",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "Flow Rate",
+        "label": "units",
+        "format": "{{value}}",
+        "min": 0,
+        "max": 10,
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 1320,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "7e41258ae8183840",
+        "type": "ui_gauge",
+        "z": "6d43a88e8d79bfa9",
+        "name": "",
+        "group": "8664b5a968affcfb",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "Flow Velocity",
+        "label": "units",
+        "format": "{{value}}",
+        "min": 0,
+        "max": 10,
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 1330,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "f195ada33fbce6c3",
+        "type": "ui_gauge",
+        "z": "6d43a88e8d79bfa9",
+        "name": "",
+        "group": "8664b5a968affcfb",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "Sensor Voltage",
+        "label": "V",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "5",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 1340,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "8d822b0083b078a7",
+        "type": "ui_gauge",
+        "z": "6d43a88e8d79bfa9",
+        "name": "",
+        "group": "8664b5a968affcfb",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "Upper Limit",
+        "label": "units",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "9999",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 1330,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "9af3deea57906036",
+        "type": "ui_gauge",
+        "z": "6d43a88e8d79bfa9",
+        "name": "",
+        "group": "8664b5a968affcfb",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "Lower Limit",
+        "label": "units",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "99",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 1330,
+        "y": 620,
+        "wires": []
+    },
+    {
+        "id": "6cb491e0b4e2fbb5",
+        "type": "function",
+        "z": "6d43a88e8d79bfa9",
+        "name": "Byte Swap CDAB",
+        "func": "let r = msg.payload?.data || msg.payload;\n\nif (!Array.isArray(r) || r.length < 2) {\n    node.warn(\"No 2 registers received: \" + JSON.stringify(msg.payload));\n    return null;\n}\n\nlet buf = Buffer.alloc(4);\n\n// CDAB / word swap\nbuf.writeUInt16BE(r[1], 0);\nbuf.writeUInt16BE(r[0], 2);\n\nmsg.payload = ((buf.readFloatBE(0)* 10).toFixed(2));\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 950,
+        "y": 160,
+        "wires": [
+            [
+                "397bdebd4b758bbd",
+                "5f65672b5b792f7d"
+            ]
+        ]
+    },
+    {
+        "id": "8977010910b3a77d",
+        "type": "delay",
+        "z": "6d43a88e8d79bfa9",
+        "name": "",
+        "pauseType": "rate",
+        "timeout": "15",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "5",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": true,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 400,
+        "y": 820,
+        "wires": [
+            [
+                "b7249b1ac202f25c"
+            ]
+        ]
+    },
+    {
+        "id": "b7249b1ac202f25c",
+        "type": "modbus-getter",
+        "z": "6d43a88e8d79bfa9",
+        "name": "ADL400N Voltage",
+        "showStatusActivities": false,
+        "showErrors": true,
+        "showWarnings": false,
+        "logIOActivities": false,
+        "unitid": "12",
+        "dataType": "HoldingRegister",
+        "adr": "8192",
+        "quantity": "8",
+        "server": "de33c1861c88b866",
+        "useIOFile": false,
+        "ioFile": "",
+        "useIOForPayload": false,
+        "emptyMsgOnFail": false,
+        "keepMsgProperties": false,
+        "delayOnStart": false,
+        "startDelayTime": "",
+        "x": 630,
+        "y": 820,
+        "wires": [
+            [
+                "1b1bb10cae2a2e09",
+                "0f2a01979b8a5ee9",
+                "44bc701a8030db49",
+                "048c92d90c4033c3"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "0f306f16f908e9c9",
+        "type": "modbus-getter",
+        "z": "6d43a88e8d79bfa9",
+        "name": "ADL400N Current",
+        "showStatusActivities": false,
+        "showErrors": true,
+        "showWarnings": false,
+        "logIOActivities": false,
+        "unitid": "12",
+        "dataType": "HoldingRegister",
+        "adr": "8204",
+        "quantity": "8",
+        "server": "de33c1861c88b866",
+        "useIOFile": false,
+        "ioFile": "",
+        "useIOForPayload": false,
+        "emptyMsgOnFail": false,
+        "keepMsgProperties": false,
+        "delayOnStart": false,
+        "startDelayTime": "",
+        "x": 630,
+        "y": 1000,
+        "wires": [
+            [
+                "6d4d561e0d25d25c",
+                "8dcc47a7395a9573",
+                "85f0214bdc844284",
+                "162d5b88a7a32531"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "16a8bd768b95db7d",
+        "type": "modbus-getter",
+        "z": "6d43a88e8d79bfa9",
+        "name": "ADL400N Power",
+        "showStatusActivities": false,
+        "showErrors": true,
+        "showWarnings": false,
+        "logIOActivities": false,
+        "unitid": "12",
+        "dataType": "HoldingRegister",
+        "adr": "8212",
+        "quantity": "10",
+        "server": "de33c1861c88b866",
+        "useIOFile": false,
+        "ioFile": "",
+        "useIOForPayload": false,
+        "emptyMsgOnFail": false,
+        "keepMsgProperties": false,
+        "delayOnStart": false,
+        "startDelayTime": "",
+        "x": 630,
+        "y": 1200,
+        "wires": [
+            [
+                "8d7c4c6c93cd148b",
+                "e5eb7ca27aa0d44a",
+                "32263fb8662f9a22",
+                "bb55f6aa6720968e",
+                "0db426949ebdd91f"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "4366510ce5aef398",
+        "type": "modbus-getter",
+        "z": "6d43a88e8d79bfa9",
+        "name": "ADL400N Line Voltage",
+        "showStatusActivities": false,
+        "showErrors": true,
+        "showWarnings": false,
+        "logIOActivities": false,
+        "unitid": "12",
+        "dataType": "HoldingRegister",
+        "adr": "8454",
+        "quantity": "10",
+        "server": "de33c1861c88b866",
+        "useIOFile": false,
+        "ioFile": "",
+        "useIOForPayload": false,
+        "emptyMsgOnFail": false,
+        "keepMsgProperties": false,
+        "delayOnStart": false,
+        "startDelayTime": "",
+        "x": 640,
+        "y": 1400,
+        "wires": [
+            [
+                "2b3f61fcb00606e0",
+                "62f3371ff7bfecee",
+                "574c3edaf965065d",
+                "e4ce7866d59f1f4f"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "6d66eb5c4a2465f7",
+        "type": "modbus-getter",
+        "z": "6d43a88e8d79bfa9",
+        "name": "Power Factor & Frequency",
+        "showStatusActivities": false,
+        "showErrors": true,
+        "showWarnings": false,
+        "logIOActivities": false,
+        "unitid": "12",
+        "dataType": "HoldingRegister",
+        "adr": "8242",
+        "quantity": "6",
+        "server": "de33c1861c88b866",
+        "useIOFile": false,
+        "ioFile": "",
+        "useIOForPayload": false,
+        "emptyMsgOnFail": false,
+        "keepMsgProperties": false,
+        "delayOnStart": false,
+        "startDelayTime": "",
+        "x": 660,
+        "y": 1580,
+        "wires": [
+            [
+                "d0e029369e1d933b",
+                "40e41a6aa7bf1544",
+                "765db7910f0b73db"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "0b9ddff5c6fed981",
+        "type": "modbus-getter",
+        "z": "6d43a88e8d79bfa9",
+        "name": "ADL400N Total Energy",
+        "showStatusActivities": false,
+        "showErrors": true,
+        "showWarnings": false,
+        "logIOActivities": false,
+        "unitid": "12",
+        "dataType": "HoldingRegister",
+        "adr": "12292",
+        "quantity": "8",
+        "server": "de33c1861c88b866",
+        "useIOFile": false,
+        "ioFile": "",
+        "useIOForPayload": false,
+        "emptyMsgOnFail": false,
+        "keepMsgProperties": false,
+        "delayOnStart": false,
+        "startDelayTime": "",
+        "x": 640,
+        "y": 1740,
+        "wires": [
+            [
+                "848826887f6492cf"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "1b1bb10cae2a2e09",
+        "type": "function",
+        "z": "6d43a88e8d79bfa9",
+        "name": "adl400_L1_V",
+        "func": "msg.topic = \"Voltage L1\";\n\n// Gabungkan dua 16-bit register jadi 32-bit float\nlet buf = Buffer.alloc(4);\nbuf.writeUInt16BE(msg.payload[0], 0);  // High word\nbuf.writeUInt16BE(msg.payload[1], 2);  // Low word\n\nlet v1 = buf.readFloatBE(0);      // Big Endian format\nmsg.payload = parseFloat(v1.toFixed(2));\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 930,
+        "y": 780,
+        "wires": [
+            [
+                "2c1fe6ad8b036004"
+            ]
+        ]
+    },
+    {
+        "id": "0f2a01979b8a5ee9",
+        "type": "function",
+        "z": "6d43a88e8d79bfa9",
+        "name": "adl400_L2_V",
+        "func": "msg.topic = \"Voltage L2\";\n\n// Gabungkan dua 16-bit register jadi 32-bit float\nlet buf = Buffer.alloc(4);\nbuf.writeUInt16BE(msg.payload[2], 0);  // High word\nbuf.writeUInt16BE(msg.payload[3], 2);  // Low word\nlet v2 = buf.readFloatBE(0);      // Big Endian format\nmsg.payload = parseFloat(v2.toFixed(2));\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 930,
+        "y": 820,
+        "wires": [
+            [
+                "2c1fe6ad8b036004"
+            ]
+        ]
+    },
+    {
+        "id": "44bc701a8030db49",
+        "type": "function",
+        "z": "6d43a88e8d79bfa9",
+        "name": "adl400_L3_V",
+        "func": "msg.topic = \"Voltage L3\";\n\n// Gabungkan dua 16-bit register jadi 32-bit float\nlet buf = Buffer.alloc(4);\nbuf.writeUInt16BE(msg.payload[4], 0);  // High word\nbuf.writeUInt16BE(msg.payload[5], 2);  // Low word\n\nlet v3 = buf.readFloatBE(0);      // Big Endian format\nmsg.payload = parseFloat(v3.toFixed(2));\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 930,
+        "y": 860,
+        "wires": [
+            [
+                "2c1fe6ad8b036004"
+            ]
+        ]
+    },
+    {
+        "id": "2c1fe6ad8b036004",
+        "type": "join",
+        "z": "6d43a88e8d79bfa9",
+        "name": "",
+        "mode": "custom",
+        "build": "object",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "topic",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "accumulate": true,
+        "timeout": "2",
+        "count": "3",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "",
+        "reduceFixup": "",
+        "x": 1130,
+        "y": 820,
+        "wires": [
+            [
+                "4f3282f6b55176f7"
+            ]
+        ]
+    },
+    {
+        "id": "4f3282f6b55176f7",
+        "type": "function",
+        "z": "6d43a88e8d79bfa9",
+        "name": "AvgVolt_1",
+        "func": "// Ambil nilai dari setiap fasa\nlet v1 = msg.payload[\"Voltage L1\"];\nlet v2 = msg.payload[\"Voltage L2\"];\nlet v3 = msg.payload[\"Voltage L3\"];\n\n// Kira purata\nlet avg = (v1 + v2 + v3) / 3;\n\n// Tetapkan output\nmsg.topic = \"Average Voltage 1\";\ncontext.flow.avv1 = parseFloat(avg.toFixed(2));\nmsg.payload = context.flow.avv1;\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1320,
+        "y": 800,
+        "wires": [
+            [
+                "3b220efeb3bdc965"
+            ]
+        ]
+    },
+    {
+        "id": "3b220efeb3bdc965",
+        "type": "ui_gauge",
+        "z": "6d43a88e8d79bfa9",
+        "name": "",
+        "group": "9220ed47ca2794a9",
+        "order": 1,
+        "width": "4",
+        "height": "4",
+        "gtype": "gage",
+        "title": "Average Voltage",
+        "label": "Volt",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "250",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 1540,
+        "y": 800,
+        "wires": []
+    },
+    {
+        "id": "535331760e190801",
+        "type": "function",
+        "z": "6d43a88e8d79bfa9",
+        "name": "MQTT_Ubi_AV Volt",
+        "func": "// Ambil nilai dari setiap fasa\nlet v1 = msg.payload[\"Voltage L1\"];\nlet v2 = msg.payload[\"Voltage L2\"];\nlet v3 = msg.payload[\"Voltage L3\"];\n\n// Kira purata\nlet avg = (v1 + v2 + v3) / 3;\n\n// Tetapkan output\nmsg.topic = \"v1.6/devices/iriv_cytron_ADL400\";\ncontext.flow.avv1 = parseFloat(avg.toFixed(2));\nmsg.payload = { average_voltage: context.flow.avv1};\nreturn msg;\n\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1350,
+        "y": 840,
+        "wires": [
+            [
+                "73d522923e4bb8fc"
+            ]
+        ]
+    },
+    {
+        "id": "73d522923e4bb8fc",
+        "type": "link out",
+        "z": "6d43a88e8d79bfa9",
+        "name": "Voltage ADL400N_1",
+        "mode": "link",
+        "links": [
+            "72274a487115b5ab"
+        ],
+        "x": 1605,
+        "y": 840,
+        "wires": []
+    },
+    {
+        "id": "6d4d561e0d25d25c",
+        "type": "function",
+        "z": "6d43a88e8d79bfa9",
+        "name": "adl400_L1_A",
+        "func": "msg.topic = \"Current L1\";\n\n// Gabungkan dua 16-bit register jadi 32-bit float\nlet buf = Buffer.alloc(4);\nbuf.writeUInt16BE(msg.payload[0], 0);  // High word\nbuf.writeUInt16BE(msg.payload[1], 2);  // Low word\n\nlet value = buf.readFloatBE(0);      // Big Endian format\nmsg.payload = parseFloat(value.toFixed(2));\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 930,
+        "y": 960,
+        "wires": [
+            [
+                "d5716bcf65e9b7be"
+            ]
+        ]
+    },
+    {
+        "id": "8dcc47a7395a9573",
+        "type": "function",
+        "z": "6d43a88e8d79bfa9",
+        "name": "adl400_L2_A",
+        "func": "msg.topic = \"Current L2\";\n\n// Gabungkan dua 16-bit register jadi 32-bit float\nlet buf = Buffer.alloc(4);\nbuf.writeUInt16BE(msg.payload[2], 0);  // High word\nbuf.writeUInt16BE(msg.payload[3], 2);  // Low word\n\nlet value = buf.readFloatBE(0);      // Big Endian format\nmsg.payload = parseFloat(value.toFixed(2));\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 930,
+        "y": 1000,
+        "wires": [
+            [
+                "d5716bcf65e9b7be"
+            ]
+        ]
+    },
+    {
+        "id": "85f0214bdc844284",
+        "type": "function",
+        "z": "6d43a88e8d79bfa9",
+        "name": "adl400_L3_A",
+        "func": "msg.topic = \"Current L3\";\n\n// Gabungkan dua 16-bit register jadi 32-bit float\nlet buf = Buffer.alloc(4);\nbuf.writeUInt16BE(msg.payload[4], 0);  // High word\nbuf.writeUInt16BE(msg.payload[5], 2);  // Low word\n\nlet value = buf.readFloatBE(0);      // Big Endian format\nmsg.payload = parseFloat(value.toFixed(2));\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 930,
+        "y": 1040,
+        "wires": [
+            [
+                "d5716bcf65e9b7be"
+            ]
+        ]
+    },
+    {
+        "id": "1b0776065637a4b1",
+        "type": "function",
+        "z": "6d43a88e8d79bfa9",
+        "name": "AvgCrnt",
+        "func": "// Ambil nilai dari setiap fasa\nlet v1 = msg.payload[\"Current L1\"];\nlet v2 = msg.payload[\"Current L2\"];\nlet v3 = msg.payload[\"Current L3\"];\n\n// Kira purata\nlet avg = (v1 + v2 + v3) / 3;\n\n// Tetapkan output\nmsg.topic = \"Average Current 1\";\ncontext.flow.avc1 = parseFloat(avg.toFixed(2));\nmsg.payload = context.flow.avc1;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1320,
+        "y": 980,
+        "wires": [
+            [
+                "e21530ccdcc63257"
+            ]
+        ]
+    },
+    {
+        "id": "d5716bcf65e9b7be",
+        "type": "join",
+        "z": "6d43a88e8d79bfa9",
+        "name": "",
+        "mode": "custom",
+        "build": "object",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "topic",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "accumulate": true,
+        "timeout": "2",
+        "count": "3",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "",
+        "reduceFixup": "",
+        "x": 1150,
+        "y": 1000,
+        "wires": [
+            [
+                "1b0776065637a4b1"
+            ]
+        ]
+    },
+    {
+        "id": "e21530ccdcc63257",
+        "type": "ui_gauge",
+        "z": "6d43a88e8d79bfa9",
+        "name": "",
+        "group": "9220ed47ca2794a9",
+        "order": 3,
+        "width": "4",
+        "height": "4",
+        "gtype": "gage",
+        "title": "Average Current",
+        "label": "Amp",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "100",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 1560,
+        "y": 980,
+        "wires": []
+    },
+    {
+        "id": "e5eb7ca27aa0d44a",
+        "type": "function",
+        "z": "6d43a88e8d79bfa9",
+        "name": "adl400_L1_W",
+        "func": "msg.topic = \"Power L1\";\n\n// Gabungkan dua 16-bit register jadi 32-bit float\nlet buf = Buffer.alloc(4);\nbuf.writeUInt16BE(msg.payload[0], 0);  // High word\nbuf.writeUInt16BE(msg.payload[1], 2);  // Low word\n\nlet value = buf.readFloatBE(0);      // Big Endian format\nmsg.payload = parseFloat(value.toFixed(2));\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 940,
+        "y": 1140,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "32263fb8662f9a22",
+        "type": "function",
+        "z": "6d43a88e8d79bfa9",
+        "name": "adl400_L2_W",
+        "func": "msg.topic = \"Power L2\";\n\n// Gabungkan dua 16-bit register jadi 32-bit float\nlet buf = Buffer.alloc(4);\nbuf.writeUInt16BE(msg.payload[2], 0);  // High word\nbuf.writeUInt16BE(msg.payload[3], 2);  // Low word\n\nlet value = buf.readFloatBE(0);      // Big Endian format\nmsg.payload = parseFloat(value.toFixed(2));\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 940,
+        "y": 1180,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "bb55f6aa6720968e",
+        "type": "function",
+        "z": "6d43a88e8d79bfa9",
+        "name": "adl400_L3_W",
+        "func": "msg.topic = \"Power L3\";\n\n// Gabungkan dua 16-bit register jadi 32-bit float\nlet buf = Buffer.alloc(4);\nbuf.writeUInt16BE(msg.payload[4], 0);  // High word\nbuf.writeUInt16BE(msg.payload[5], 2);  // Low word\n\nlet value = buf.readFloatBE(0);      // Big Endian format\nmsg.payload = parseFloat(value.toFixed(2));\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 940,
+        "y": 1220,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "8d7c4c6c93cd148b",
+        "type": "function",
+        "z": "6d43a88e8d79bfa9",
+        "name": "adl400_Total_W",
+        "func": "msg.topic = \"Power Total\";\n\n// Gabungkan dua 16-bit register jadi 32-bit float\nlet buf = Buffer.alloc(4);\nbuf.writeUInt16BE(msg.payload[6], 0);  // High word\nbuf.writeUInt16BE(msg.payload[7], 2);  // Low word\n\nlet value = buf.readFloatBE(0);      // Big Endian format\nmsg.payload = parseFloat(value.toFixed(2));\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 940,
+        "y": 1260,
+        "wires": [
+            [
+                "7cd07f0c721fab18"
+            ]
+        ]
+    },
+    {
+        "id": "2b3f61fcb00606e0",
+        "type": "function",
+        "z": "6d43a88e8d79bfa9",
+        "name": "adl400_AB_V",
+        "func": "msg.topic = \"Line AB\";\n\n// Gabungkan dua 16-bit register jadi 32-bit float\nlet buf = Buffer.alloc(4);\nbuf.writeUInt16BE(msg.payload[0], 0);  // High word\nbuf.writeUInt16BE(msg.payload[1], 2);  // Low word\n\nlet value = buf.readFloatBE(0);      // Big Endian format\nmsg.payload = parseFloat(value.toFixed(2));\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 940,
+        "y": 1360,
+        "wires": [
+            [
+                "ba74694f041e378a"
+            ]
+        ]
+    },
+    {
+        "id": "62f3371ff7bfecee",
+        "type": "function",
+        "z": "6d43a88e8d79bfa9",
+        "name": "adl400_BC_V",
+        "func": "msg.topic = \"Line BC\";\n\n// Gabungkan dua 16-bit register jadi 32-bit float\nlet buf = Buffer.alloc(4);\nbuf.writeUInt16BE(msg.payload[2], 0);  // High word\nbuf.writeUInt16BE(msg.payload[3], 2);  // Low word\n\nlet value = buf.readFloatBE(0);      // Big Endian format\nmsg.payload = parseFloat(value.toFixed(2));\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 940,
+        "y": 1400,
+        "wires": [
+            [
+                "ba74694f041e378a"
+            ]
+        ]
+    },
+    {
+        "id": "574c3edaf965065d",
+        "type": "function",
+        "z": "6d43a88e8d79bfa9",
+        "name": "adl400_CA_V",
+        "func": "msg.topic = \"Line CA\";\n\n// Gabungkan dua 16-bit register jadi 32-bit float\nlet buf = Buffer.alloc(4);\nbuf.writeUInt16BE(msg.payload[4], 0);  // High word\nbuf.writeUInt16BE(msg.payload[5], 2);  // Low word\n\nlet value = buf.readFloatBE(0);      // Big Endian format\nmsg.payload = parseFloat(value.toFixed(2));\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 940,
+        "y": 1440,
+        "wires": [
+            [
+                "ba74694f041e378a"
+            ]
+        ]
+    },
+    {
+        "id": "3b914c965be9f511",
+        "type": "ui_gauge",
+        "z": "6d43a88e8d79bfa9",
+        "name": "",
+        "group": "9220ed47ca2794a9",
+        "order": 2,
+        "width": "0",
+        "height": "0",
+        "gtype": "gage",
+        "title": "Average Line Voltage",
+        "label": "Volt",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "500",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 1540,
+        "y": 1380,
+        "wires": []
+    },
+    {
+        "id": "ba74694f041e378a",
+        "type": "join",
+        "z": "6d43a88e8d79bfa9",
+        "name": "",
+        "mode": "custom",
+        "build": "object",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "topic",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "accumulate": true,
+        "timeout": "2",
+        "count": "3",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "",
+        "reduceFixup": "",
+        "x": 1150,
+        "y": 1400,
+        "wires": [
+            [
+                "3fc122520d350dd0"
+            ]
+        ]
+    },
+    {
+        "id": "3fc122520d350dd0",
+        "type": "function",
+        "z": "6d43a88e8d79bfa9",
+        "name": "AvgLineV",
+        "func": "// Ambil nilai dari setiap fasa\nlet v1 = msg.payload[\"Line AB\"];\nlet v2 = msg.payload[\"Line BC\"];\nlet v3 = msg.payload[\"Line CA\"];\n\n// Kira purata\nlet avg = (v1 + v2 + v3) / 3;\n\n// Tetapkan output\nmsg.topic = \"Average Line Voltage 1\";\ncontext.flow.avl1 = parseFloat(avg.toFixed(2));\nmsg.payload = context.flow.avl1;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1320,
+        "y": 1380,
+        "wires": [
+            [
+                "3b914c965be9f511"
+            ]
+        ]
+    },
+    {
+        "id": "d0e029369e1d933b",
+        "type": "function",
+        "z": "6d43a88e8d79bfa9",
+        "name": "adl400_Factor",
+        "func": "msg.topic = \"Factor\";\n\n// Gabungkan dua 16-bit register jadi 32-bit float\nlet buf = Buffer.alloc(4);\nbuf.writeUInt16BE(msg.payload[0], 0);  // High word\nbuf.writeUInt16BE(msg.payload[1], 2);  // Low word\n\nlet value = buf.readFloatBE(0);      // Big Endian format\nmsg.payload = parseFloat(value.toFixed(2));\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 940,
+        "y": 1540,
+        "wires": [
+            [
+                "03550b449ff53cff"
+            ]
+        ]
+    },
+    {
+        "id": "40e41a6aa7bf1544",
+        "type": "function",
+        "z": "6d43a88e8d79bfa9",
+        "name": "adl400_Frequency",
+        "func": "msg.topic = \"Frequency\";\n\n// Gabungkan dua 16-bit register jadi 32-bit float\nlet buf = Buffer.alloc(4);\nbuf.writeUInt16BE(msg.payload[2], 0);  // High word\nbuf.writeUInt16BE(msg.payload[3], 2);  // Low word\n\nlet value = buf.readFloatBE(0);      // Big Endian format\nmsg.payload = parseFloat(value.toFixed(2));\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 950,
+        "y": 1620,
+        "wires": [
+            [
+                "c8587cc78525b140"
+            ]
+        ]
+    },
+    {
+        "id": "7cd07f0c721fab18",
+        "type": "ui_gauge",
+        "z": "6d43a88e8d79bfa9",
+        "name": "",
+        "group": "9220ed47ca2794a9",
+        "order": 10,
+        "width": "4",
+        "height": "4",
+        "gtype": "gage",
+        "title": "Total Power",
+        "label": "kW",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "55",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 1330,
+        "y": 1220,
+        "wires": []
+    },
+    {
+        "id": "03550b449ff53cff",
+        "type": "ui_text",
+        "z": "6d43a88e8d79bfa9",
+        "group": "9220ed47ca2794a9",
+        "order": 9,
+        "width": 4,
+        "height": 2,
+        "name": "",
+        "label": "Power Factor",
+        "format": "{{msg.payload}}",
+        "layout": "col-center",
+        "className": "",
+        "style": true,
+        "font": "Arial Black,Arial Black,Gadget,sans-serif",
+        "fontSize": "19",
+        "color": "#fafafa",
+        "x": 1330,
+        "y": 1560,
+        "wires": []
+    },
+    {
+        "id": "c8587cc78525b140",
+        "type": "ui_text",
+        "z": "6d43a88e8d79bfa9",
+        "group": "9220ed47ca2794a9",
+        "order": 8,
+        "width": 4,
+        "height": 2,
+        "name": "",
+        "label": "Frequency",
+        "format": "{{msg.payload}}",
+        "layout": "col-center",
+        "className": "",
+        "style": true,
+        "font": "Arial Black,Arial Black,Gadget,sans-serif",
+        "fontSize": "20",
+        "color": "#fafafa",
+        "x": 1330,
+        "y": 1620,
+        "wires": []
+    },
+    {
+        "id": "9d02e6f4e3257cfa",
+        "type": "function",
+        "z": "6d43a88e8d79bfa9",
+        "name": "MQTT_Ubi_AV Amp",
+        "func": "// Ambil nilai dari setiap fasa\nlet c1 = msg.payload[\"Current L1\"];\nlet c2 = msg.payload[\"Current L2\"];\nlet c3 = msg.payload[\"Current L3\"];\n\n// Kira purata\nlet avg = (c1 + c2 + c3) / 3;\n\n// Tetapkan output\nmsg.topic = \"v1.6/devices/iriv_cytron_ADL400\";\ncontext.flow.avc1 = parseFloat(avg.toFixed(2));\nmsg.payload = { average_current: context.flow.crn1};\nreturn msg;\n\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1360,
+        "y": 1020,
+        "wires": [
+            [
+                "f55d7b84f7ae5cb9"
+            ]
+        ]
+    },
+    {
+        "id": "8468839323dcc06c",
+        "type": "function",
+        "z": "6d43a88e8d79bfa9",
+        "name": "MQTT_Ubi_AV Volt",
+        "func": "// Ambil nilai dari setiap fasa\nlet v1 = msg.payload[\"Line AB\"];\nlet v2 = msg.payload[\"Line BC\"];\nlet v3 = msg.payload[\"Line CA\"];\n\n// Kira purata\nlet avg = (v1 + v2 + v3) / 3;\n\n// Tetapkan output\nmsg.topic = \"v1.6/devices/iriv_cytron_ADL400\";\ncontext.flow.avl1 = parseFloat(avg.toFixed(2));\nmsg.payload = { avg_Voltage_Line: context.flow.avl1};\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1350,
+        "y": 1420,
+        "wires": [
+            [
+                "0bd82e77c3bf6a9b"
+            ]
+        ]
+    },
+    {
+        "id": "d752a9d320c51d9a",
+        "type": "function",
+        "z": "6d43a88e8d79bfa9",
+        "name": "MQTT_Ubi_Factor",
+        "func": "let pf = msg.payload;\n\n// Tetapkan output\nmsg.topic = \"v1.6/devices/iriv_cytron_ADL400\";\ncontext.flow.fact1 = parseFloat(pf.toFixed(2));\nmsg.payload = { power_Factor: context.flow.fact1};\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1350,
+        "y": 1520,
+        "wires": [
+            [
+                "b30202c2674b7af5"
+            ]
+        ]
+    },
+    {
+        "id": "03e73a66fcd0203b",
+        "type": "function",
+        "z": "6d43a88e8d79bfa9",
+        "name": "MQTT_Ubi_PowerA",
+        "func": "let pt = msg.payload;\n\n// Tetapkan output\nmsg.topic = \"v1.6/devices/iriv_cytron_ADL400\";\ncontext.flow.pow1 = parseFloat(pt.toFixed(2));\nmsg.payload = { totalpower: context.flow.pow1 };\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1360,
+        "y": 1260,
+        "wires": [
+            [
+                "23c93b3f97e5ca68"
+            ]
+        ]
+    },
+    {
+        "id": "3d9eb910988a685e",
+        "type": "function",
+        "z": "6d43a88e8d79bfa9",
+        "name": "MQTT_Ubi_Frequency",
+        "func": "let frq = msg.payload;\n\n// Tetapkan output\nmsg.topic = \"v1.6/devices/iriv_cytron_ADL400\";\ncontext.flow.freq1 = parseFloat(frq.toFixed(2));\nmsg.payload = { frequency: context.flow.freq1};\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1360,
+        "y": 1660,
+        "wires": [
+            [
+                "b670c947731d816a"
+            ]
+        ]
+    },
+    {
+        "id": "848826887f6492cf",
+        "type": "function",
+        "z": "6d43a88e8d79bfa9",
+        "name": "adl400_Frequency",
+        "func": "msg.topic = \"Energy Total\";\n\n// Pastikan anda baca 4 register berturut-turut (3004~3007)\nlet buf = Buffer.alloc(8);\nbuf.writeUInt16BE(msg.payload[0], 0);\nbuf.writeUInt16BE(msg.payload[1], 2);\nbuf.writeUInt16BE(msg.payload[2], 4);\nbuf.writeUInt16BE(msg.payload[3], 6);\n\nlet value = buf.readDoubleBE(0);   // 64-bit double (Big Endian)\ncontext.flow.enrg1 = parseFloat(value.toFixed(2))\nmsg.payload = context.flow.enrg1;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 950,
+        "y": 1740,
+        "wires": [
+            [
+                "825764e001482de5"
+            ]
+        ]
+    },
+    {
+        "id": "825764e001482de5",
+        "type": "function",
+        "z": "6d43a88e8d79bfa9",
+        "name": "TotalEnergy",
+        "func": "var enrg_1 = context.flow.enrg1;\n\nmsg.topic = \"INSERT INTO TotalEnergy(TotalEnergy) VALUES (\" + enrg_1 + \")\";\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1330,
+        "y": 1740,
+        "wires": [
+            [
+                "7121ef62987f91af"
+            ]
+        ]
+    },
+    {
+        "id": "f55d7b84f7ae5cb9",
+        "type": "link out",
+        "z": "6d43a88e8d79bfa9",
+        "name": "Current ADL400N_1",
+        "mode": "link",
+        "links": [
+            "72274a487115b5ab"
+        ],
+        "x": 1625,
+        "y": 1020,
+        "wires": []
+    },
+    {
+        "id": "23c93b3f97e5ca68",
+        "type": "link out",
+        "z": "6d43a88e8d79bfa9",
+        "name": "Power ADL400N_1",
+        "mode": "link",
+        "links": [
+            "72274a487115b5ab"
+        ],
+        "x": 1625,
+        "y": 1260,
+        "wires": []
+    },
+    {
+        "id": "0bd82e77c3bf6a9b",
+        "type": "link out",
+        "z": "6d43a88e8d79bfa9",
+        "name": "Line Voltage ADL400N_1",
+        "mode": "link",
+        "links": [
+            "72274a487115b5ab"
+        ],
+        "x": 1625,
+        "y": 1420,
+        "wires": []
+    },
+    {
+        "id": "b30202c2674b7af5",
+        "type": "link out",
+        "z": "6d43a88e8d79bfa9",
+        "name": "Factor ADL400N_1",
+        "mode": "link",
+        "links": [
+            "72274a487115b5ab"
+        ],
+        "x": 1625,
+        "y": 1520,
+        "wires": []
+    },
+    {
+        "id": "b670c947731d816a",
+        "type": "link out",
+        "z": "6d43a88e8d79bfa9",
+        "name": "Frequency ADL400N_1",
+        "mode": "link",
+        "links": [
+            "72274a487115b5ab"
+        ],
+        "x": 1625,
+        "y": 1660,
+        "wires": []
+    },
+    {
+        "id": "7121ef62987f91af",
+        "type": "link out",
+        "z": "6d43a88e8d79bfa9",
+        "name": "Total Energy ADL400N_1",
+        "mode": "link",
+        "links": [
+            "581e9b95e179a929"
+        ],
+        "x": 1625,
+        "y": 1740,
+        "wires": []
+    },
+    {
+        "id": "6e65726aae8b3d80",
+        "type": "delay",
+        "z": "6d43a88e8d79bfa9",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "0.1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 410,
+        "y": 380,
+        "wires": [
+            [
+                "b8a4f518acb29766"
+            ]
+        ]
+    },
+    {
+        "id": "caae067aa07c6cce",
+        "type": "delay",
+        "z": "6d43a88e8d79bfa9",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "0.1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 410,
+        "y": 460,
+        "wires": [
+            [
+                "a48f8efc5078db86"
+            ]
+        ]
+    },
+    {
+        "id": "3ef0b8e1f03d5d85",
+        "type": "delay",
+        "z": "6d43a88e8d79bfa9",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "0.1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 410,
+        "y": 540,
+        "wires": [
+            [
+                "7b7566a15f068a15"
+            ]
+        ]
+    },
+    {
+        "id": "82fe9259d01d2b81",
+        "type": "delay",
+        "z": "6d43a88e8d79bfa9",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "0.1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 410,
+        "y": 620,
+        "wires": [
+            [
+                "498b854b80391063"
+            ]
+        ]
+    },
+    {
+        "id": "048c92d90c4033c3",
+        "type": "delay",
+        "z": "6d43a88e8d79bfa9",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "0.1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 410,
+        "y": 1000,
+        "wires": [
+            [
+                "0f306f16f908e9c9"
+            ]
+        ]
+    },
+    {
+        "id": "162d5b88a7a32531",
+        "type": "delay",
+        "z": "6d43a88e8d79bfa9",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "0.1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 410,
+        "y": 1200,
+        "wires": [
+            [
+                "16a8bd768b95db7d"
+            ]
+        ]
+    },
+    {
+        "id": "0db426949ebdd91f",
+        "type": "delay",
+        "z": "6d43a88e8d79bfa9",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "0.1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 410,
+        "y": 1400,
+        "wires": [
+            [
+                "4366510ce5aef398"
+            ]
+        ]
+    },
+    {
+        "id": "e4ce7866d59f1f4f",
+        "type": "delay",
+        "z": "6d43a88e8d79bfa9",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "0.1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 410,
+        "y": 1580,
+        "wires": [
+            [
+                "6d66eb5c4a2465f7"
+            ]
+        ]
+    },
+    {
+        "id": "765db7910f0b73db",
+        "type": "delay",
+        "z": "6d43a88e8d79bfa9",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "0.1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 410,
+        "y": 1740,
+        "wires": [
+            [
+                "0b9ddff5c6fed981"
+            ]
+        ]
+    },
+    {
+        "id": "de33c1861c88b866",
+        "type": "modbus-client",
+        "name": "RS485 ACM0",
+        "clienttype": "simpleser",
+        "bufferCommands": true,
+        "stateLogEnabled": false,
+        "queueLogEnabled": false,
+        "failureLogEnabled": true,
+        "tcpHost": "127.0.0.1",
+        "tcpPort": "502",
+        "tcpType": "DEFAULT",
+        "serialPort": "/dev/ttyACM0",
+        "serialType": "RTU",
+        "serialBaudrate": "9600",
+        "serialDatabits": "8",
+        "serialStopbits": "1",
+        "serialParity": "none",
+        "serialConnectionDelay": "100",
+        "serialAsciiResponseStartDelimiter": "0x3A",
+        "unit_id": "1",
+        "commandDelay": "1",
+        "clientTimeout": "2000",
+        "reconnectOnTimeout": false,
+        "reconnectTimeout": "2000",
+        "parallelUnitIdsAllowed": true,
+        "showErrors": true,
+        "showWarnings": true,
+        "showLogs": true
+    },
+    {
+        "id": "d32e9818ed320a1a",
+        "type": "ui_group",
+        "name": "Pressure Sensor",
+        "tab": "7f67cf938426a505",
+        "order": 3,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "8664b5a968affcfb",
+        "type": "ui_group",
+        "name": "Flow Meter",
+        "tab": "7f67cf938426a505",
+        "order": 2,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "9220ed47ca2794a9",
+        "type": "ui_group",
+        "name": "Power Data",
+        "tab": "7f67cf938426a505",
+        "order": 1,
+        "disp": true,
+        "width": "12",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "7f67cf938426a505",
+        "type": "ui_tab",
+        "name": "Flow, Power & Pressure Sensor",
+        "icon": "Any dashboard",
+        "disabled": false,
+        "hidden": false
+    }
+]

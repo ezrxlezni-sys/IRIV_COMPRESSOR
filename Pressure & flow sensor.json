@@ -1,0 +1,786 @@
+[
+    {
+        "id": "30c480cdacae5e10",
+        "type": "tab",
+        "label": "PD500 Pressure Sensor",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "c803df7b548153ab",
+        "type": "modbus-getter",
+        "z": "30c480cdacae5e10",
+        "name": "Temperature PD500",
+        "showStatusActivities": true,
+        "showErrors": true,
+        "showWarnings": true,
+        "logIOActivities": false,
+        "unitid": "1",
+        "dataType": "HoldingRegister",
+        "adr": "34",
+        "quantity": "2",
+        "server": "de33c1861c88b866",
+        "useIOFile": false,
+        "ioFile": "",
+        "useIOForPayload": false,
+        "emptyMsgOnFail": false,
+        "keepMsgProperties": true,
+        "delayOnStart": true,
+        "startDelayTime": "1",
+        "x": 740,
+        "y": 140,
+        "wires": [
+            [
+                "b8eebc98299ec892",
+                "53dadb87e01923b2"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "e993ef35b22d81cf",
+        "type": "inject",
+        "z": "30c480cdacae5e10",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "1",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "10",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 250,
+        "y": 140,
+        "wires": [
+            [
+                "5fb13ae432c66a12"
+            ]
+        ]
+    },
+    {
+        "id": "cbc405ee56174810",
+        "type": "debug",
+        "z": "30c480cdacae5e10",
+        "name": "DB PD500 Pressure Sensor",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1300,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "b8eebc98299ec892",
+        "type": "function",
+        "z": "30c480cdacae5e10",
+        "name": "Temperature",
+        "func": "let r = msg.payload?.data || msg.payload;\n\nif (!Array.isArray(r) || r.length < 2) {\n    node.warn(\"No 2 registers received: \" + JSON.stringify(msg.payload));\n    return null;\n}\n\nlet buf = Buffer.alloc(4);\n\n// CDAB / word swap\nbuf.writeUInt16BE(r[1], 0);\nbuf.writeUInt16BE(r[0], 2);\n\nmsg.payload = buf.readFloatBE(0);\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1010,
+        "y": 140,
+        "wires": [
+            [
+                "cbc405ee56174810"
+            ]
+        ]
+    },
+    {
+        "id": "bef1f02fb82c4b5f",
+        "type": "modbus-getter",
+        "z": "30c480cdacae5e10",
+        "name": "Pressure PD500",
+        "showStatusActivities": true,
+        "showErrors": true,
+        "showWarnings": true,
+        "logIOActivities": false,
+        "unitid": "1",
+        "dataType": "HoldingRegister",
+        "adr": "36",
+        "quantity": "2",
+        "server": "de33c1861c88b866",
+        "useIOFile": false,
+        "ioFile": "",
+        "useIOForPayload": false,
+        "emptyMsgOnFail": false,
+        "keepMsgProperties": true,
+        "delayOnStart": true,
+        "startDelayTime": "1",
+        "x": 720,
+        "y": 220,
+        "wires": [
+            [
+                "427c47fef4802674",
+                "ea4585f26fa67a1d"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "53dadb87e01923b2",
+        "type": "delay",
+        "z": "30c480cdacae5e10",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 480,
+        "y": 220,
+        "wires": [
+            [
+                "bef1f02fb82c4b5f"
+            ]
+        ]
+    },
+    {
+        "id": "427c47fef4802674",
+        "type": "function",
+        "z": "30c480cdacae5e10",
+        "name": "Pressure",
+        "func": "let r = msg.payload?.data || msg.payload;\n\nif (!Array.isArray(r) || r.length < 2) {\n    node.warn(\"No 2 registers received: \" + JSON.stringify(msg.payload));\n    return null;\n}\n\nlet buf = Buffer.alloc(4);\n\n// CDAB / word swap\nbuf.writeUInt16BE(r[1], 0);\nbuf.writeUInt16BE(r[0], 2);\n\nmsg.payload = buf.readFloatBE(0) * 10;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1000,
+        "y": 220,
+        "wires": [
+            [
+                "cbc405ee56174810"
+            ]
+        ]
+    },
+    {
+        "id": "5fb13ae432c66a12",
+        "type": "delay",
+        "z": "30c480cdacae5e10",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 480,
+        "y": 140,
+        "wires": [
+            [
+                "c803df7b548153ab"
+            ]
+        ]
+    },
+    {
+        "id": "e868849c5ccde760",
+        "type": "modbus-getter",
+        "z": "30c480cdacae5e10",
+        "name": "Temperature",
+        "showStatusActivities": false,
+        "showErrors": false,
+        "showWarnings": true,
+        "logIOActivities": false,
+        "unitid": "11",
+        "dataType": "HoldingRegister",
+        "adr": "0",
+        "quantity": "2",
+        "server": "de33c1861c88b866",
+        "useIOFile": false,
+        "ioFile": "",
+        "useIOForPayload": false,
+        "emptyMsgOnFail": false,
+        "keepMsgProperties": false,
+        "delayOnStart": false,
+        "startDelayTime": "1",
+        "x": 750,
+        "y": 360,
+        "wires": [
+            [
+                "41f6fcd1608cf8b2",
+                "a530bbc417e69f1d"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "f8770a152bb93e0b",
+        "type": "debug",
+        "z": "30c480cdacae5e10",
+        "name": "DB Flow Meter",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1320,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "41276e0b0008dc36",
+        "type": "modbus-getter",
+        "z": "30c480cdacae5e10",
+        "name": "Flow",
+        "showStatusActivities": false,
+        "showErrors": false,
+        "showWarnings": true,
+        "logIOActivities": false,
+        "unitid": "11",
+        "dataType": "HoldingRegister",
+        "adr": "2",
+        "quantity": "2",
+        "server": "de33c1861c88b866",
+        "useIOFile": false,
+        "ioFile": "",
+        "useIOForPayload": false,
+        "emptyMsgOnFail": false,
+        "keepMsgProperties": false,
+        "delayOnStart": false,
+        "startDelayTime": "1",
+        "x": 730,
+        "y": 440,
+        "wires": [
+            [
+                "f5ed981497c9f29b",
+                "e960c8c62f6fcc18"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "494f9b84c02a4aad",
+        "type": "modbus-getter",
+        "z": "30c480cdacae5e10",
+        "name": "Velocity",
+        "showStatusActivities": false,
+        "showErrors": false,
+        "showWarnings": true,
+        "logIOActivities": false,
+        "unitid": "11",
+        "dataType": "HoldingRegister",
+        "adr": "4",
+        "quantity": "2",
+        "server": "de33c1861c88b866",
+        "useIOFile": false,
+        "ioFile": "",
+        "useIOForPayload": false,
+        "emptyMsgOnFail": false,
+        "keepMsgProperties": false,
+        "delayOnStart": false,
+        "startDelayTime": "1",
+        "x": 740,
+        "y": 520,
+        "wires": [
+            [
+                "47c791f1ecd862a1",
+                "7a4430199d2f448a"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "47c791f1ecd862a1",
+        "type": "delay",
+        "z": "30c480cdacae5e10",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 480,
+        "y": 600,
+        "wires": [
+            [
+                "b9117e5d40e6dc45"
+            ]
+        ]
+    },
+    {
+        "id": "b9117e5d40e6dc45",
+        "type": "modbus-getter",
+        "z": "30c480cdacae5e10",
+        "name": "Voltage",
+        "showStatusActivities": false,
+        "showErrors": false,
+        "showWarnings": true,
+        "logIOActivities": false,
+        "unitid": "11",
+        "dataType": "HoldingRegister",
+        "adr": "6",
+        "quantity": "2",
+        "server": "de33c1861c88b866",
+        "useIOFile": false,
+        "ioFile": "",
+        "useIOForPayload": false,
+        "emptyMsgOnFail": false,
+        "keepMsgProperties": false,
+        "delayOnStart": false,
+        "startDelayTime": "1",
+        "x": 740,
+        "y": 600,
+        "wires": [
+            [
+                "0e937ba07a80afe5",
+                "c67e04e021b57058"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "0e937ba07a80afe5",
+        "type": "delay",
+        "z": "30c480cdacae5e10",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 480,
+        "y": 680,
+        "wires": [
+            [
+                "4a5d9eb64923aee8"
+            ]
+        ]
+    },
+    {
+        "id": "4a5d9eb64923aee8",
+        "type": "modbus-getter",
+        "z": "30c480cdacae5e10",
+        "name": "Upper Limit >=100",
+        "showStatusActivities": false,
+        "showErrors": false,
+        "showWarnings": true,
+        "logIOActivities": false,
+        "unitid": "11",
+        "dataType": "HoldingRegister",
+        "adr": "8",
+        "quantity": "2",
+        "server": "de33c1861c88b866",
+        "useIOFile": false,
+        "ioFile": "",
+        "useIOForPayload": false,
+        "emptyMsgOnFail": false,
+        "keepMsgProperties": false,
+        "delayOnStart": false,
+        "startDelayTime": "1",
+        "x": 770,
+        "y": 680,
+        "wires": [
+            [
+                "e5c69fad5613a207",
+                "a1f42c473cc6387a"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "e5c69fad5613a207",
+        "type": "delay",
+        "z": "30c480cdacae5e10",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 480,
+        "y": 760,
+        "wires": [
+            [
+                "c667ca4efb590853"
+            ]
+        ]
+    },
+    {
+        "id": "c667ca4efb590853",
+        "type": "modbus-getter",
+        "z": "30c480cdacae5e10",
+        "name": "lower Limit < 100",
+        "showStatusActivities": false,
+        "showErrors": false,
+        "showWarnings": true,
+        "logIOActivities": false,
+        "unitid": "11",
+        "dataType": "HoldingRegister",
+        "adr": "10",
+        "quantity": "2",
+        "server": "de33c1861c88b866",
+        "useIOFile": false,
+        "ioFile": "",
+        "useIOForPayload": false,
+        "emptyMsgOnFail": false,
+        "keepMsgProperties": false,
+        "delayOnStart": false,
+        "startDelayTime": "1",
+        "x": 770,
+        "y": 760,
+        "wires": [
+            [
+                "1206501d52546e8a",
+                "94c8f01424be9f83"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "f212f8435f54d468",
+        "type": "modbus-getter",
+        "z": "30c480cdacae5e10",
+        "name": "Pressure",
+        "showStatusActivities": false,
+        "showErrors": false,
+        "showWarnings": true,
+        "logIOActivities": false,
+        "unitid": "11",
+        "dataType": "HoldingRegister",
+        "adr": "12",
+        "quantity": "2",
+        "server": "de33c1861c88b866",
+        "useIOFile": false,
+        "ioFile": "",
+        "useIOForPayload": false,
+        "emptyMsgOnFail": false,
+        "keepMsgProperties": false,
+        "delayOnStart": false,
+        "startDelayTime": "1",
+        "x": 740,
+        "y": 840,
+        "wires": [
+            [
+                "9428ad2734d9cc76"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "1206501d52546e8a",
+        "type": "delay",
+        "z": "30c480cdacae5e10",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 480,
+        "y": 840,
+        "wires": [
+            [
+                "f212f8435f54d468"
+            ]
+        ]
+    },
+    {
+        "id": "ea4585f26fa67a1d",
+        "type": "delay",
+        "z": "30c480cdacae5e10",
+        "name": "",
+        "pauseType": "rate",
+        "timeout": "15",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "15",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": true,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 500,
+        "y": 360,
+        "wires": [
+            [
+                "e868849c5ccde760"
+            ]
+        ]
+    },
+    {
+        "id": "f5ed981497c9f29b",
+        "type": "function",
+        "z": "30c480cdacae5e10",
+        "name": "Swap byte CDAB",
+        "func": "let r = msg.payload.data || msg.payload;\n\n/*\nif (!Array.isArray(r) || r.length < 2) {\n    node.warn(\"Need 2 registers\");\n    return null;\n}\n\nnode.warn(r);\n*/\n\n// Split registers into bytes\nlet b0 = (r[0] >> 8) & 0xFF;\nlet b1 = r[0] & 0xFF;\nlet b2 = (r[1] >> 8) & 0xFF;\nlet b3 = r[1] & 0xFF;\n\n// EXACT same as your old working code\nlet buf = Buffer.from([b2, b3, b0, b1]);\n\nmsg.payload = Number(buf.readFloatBE(0).toFixed(2));\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1050,
+        "y": 440,
+        "wires": [
+            [
+                "f8770a152bb93e0b"
+            ]
+        ]
+    },
+    {
+        "id": "7a4430199d2f448a",
+        "type": "function",
+        "z": "30c480cdacae5e10",
+        "name": "Swap byte CDAB",
+        "func": "let r = msg.payload.data || msg.payload;\n\n/*\nif (!Array.isArray(r) || r.length < 2) {\n    node.warn(\"Need 2 registers\");\n    return null;\n}\n\nnode.warn(r);\n*/\n\n// Split registers into bytes\nlet b0 = (r[0] >> 8) & 0xFF;\nlet b1 = r[0] & 0xFF;\nlet b2 = (r[1] >> 8) & 0xFF;\nlet b3 = r[1] & 0xFF;\n\n// EXACT same as your old working code\nlet buf = Buffer.from([b2, b3, b0, b1]);\n\nmsg.payload = Number(buf.readFloatBE(0).toFixed(2));\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1050,
+        "y": 520,
+        "wires": [
+            [
+                "f8770a152bb93e0b"
+            ]
+        ]
+    },
+    {
+        "id": "c67e04e021b57058",
+        "type": "function",
+        "z": "30c480cdacae5e10",
+        "name": "Swap byte CDAB",
+        "func": "let r = msg.payload.data || msg.payload;\n\n/*\nif (!Array.isArray(r) || r.length < 2) {\n    node.warn(\"Need 2 registers\");\n    return null;\n}\n\nnode.warn(r);\n*/\n\n// Split registers into bytes\nlet b0 = (r[0] >> 8) & 0xFF;\nlet b1 = r[0] & 0xFF;\nlet b2 = (r[1] >> 8) & 0xFF;\nlet b3 = r[1] & 0xFF;\n\n// EXACT same as your old working code\nlet buf = Buffer.from([b2, b3, b0, b1]);\n\nmsg.payload = Number(buf.readFloatBE(0).toFixed(2));\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1050,
+        "y": 600,
+        "wires": [
+            [
+                "f8770a152bb93e0b"
+            ]
+        ]
+    },
+    {
+        "id": "a1f42c473cc6387a",
+        "type": "function",
+        "z": "30c480cdacae5e10",
+        "name": "Swap byte CDAB",
+        "func": "let r = msg.payload.data || msg.payload;\n\n/*\nif (!Array.isArray(r) || r.length < 2) {\n    node.warn(\"Need 2 registers\");\n    return null;\n}\n\nnode.warn(r);\n*/\n\n// Split registers into bytes\nlet b0 = (r[0] >> 8) & 0xFF;\nlet b1 = r[0] & 0xFF;\nlet b2 = (r[1] >> 8) & 0xFF;\nlet b3 = r[1] & 0xFF;\n\n// EXACT same as your old working code\nlet buf = Buffer.from([b2, b3, b0, b1]);\n\nmsg.payload = Number(buf.readFloatBE(0).toFixed(2));\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1050,
+        "y": 680,
+        "wires": [
+            [
+                "f8770a152bb93e0b"
+            ]
+        ]
+    },
+    {
+        "id": "94c8f01424be9f83",
+        "type": "function",
+        "z": "30c480cdacae5e10",
+        "name": "Swap byte CDAB",
+        "func": "let r = msg.payload.data || msg.payload;\n\n/*\nif (!Array.isArray(r) || r.length < 2) {\n    node.warn(\"Need 2 registers\");\n    return null;\n}\n\nnode.warn(r);\n*/\n\n// Split registers into bytes\nlet b0 = (r[0] >> 8) & 0xFF;\nlet b1 = r[0] & 0xFF;\nlet b2 = (r[1] >> 8) & 0xFF;\nlet b3 = r[1] & 0xFF;\n\n// EXACT same as your old working code\nlet buf = Buffer.from([b2, b3, b0, b1]);\n\nmsg.payload = Number(buf.readFloatBE(0).toFixed(2));\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1050,
+        "y": 760,
+        "wires": [
+            [
+                "f8770a152bb93e0b"
+            ]
+        ]
+    },
+    {
+        "id": "e960c8c62f6fcc18",
+        "type": "delay",
+        "z": "30c480cdacae5e10",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 480,
+        "y": 520,
+        "wires": [
+            [
+                "494f9b84c02a4aad"
+            ]
+        ]
+    },
+    {
+        "id": "41f6fcd1608cf8b2",
+        "type": "delay",
+        "z": "30c480cdacae5e10",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 480,
+        "y": 440,
+        "wires": [
+            [
+                "41276e0b0008dc36"
+            ]
+        ]
+    },
+    {
+        "id": "a530bbc417e69f1d",
+        "type": "function",
+        "z": "30c480cdacae5e10",
+        "name": "Swap byte CDAB",
+        "func": "let r = msg.payload.data || msg.payload;\n\n/*\nif (!Array.isArray(r) || r.length < 2) {\n    node.warn(\"Need 2 registers\");\n    return null;\n}\n\nnode.warn(r);\n*/\n\n// Split registers into bytes\nlet b0 = (r[0] >> 8) & 0xFF;\nlet b1 = r[0] & 0xFF;\nlet b2 = (r[1] >> 8) & 0xFF;\nlet b3 = r[1] & 0xFF;\n\n// EXACT same as your old working code\nlet buf = Buffer.from([b2, b3, b0, b1]);\n\nmsg.payload = Number(buf.readFloatBE(0).toFixed(2));\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1050,
+        "y": 360,
+        "wires": [
+            [
+                "f8770a152bb93e0b"
+            ]
+        ]
+    },
+    {
+        "id": "9428ad2734d9cc76",
+        "type": "function",
+        "z": "30c480cdacae5e10",
+        "name": "Swap byte CDAB",
+        "func": "let r = msg.payload.data || msg.payload;\n\n/*\nif (!Array.isArray(r) || r.length < 2) {\n    node.warn(\"Need 2 registers\");\n    return null;\n}\n\nnode.warn(r);\n*/\n\n// Split registers into bytes\nlet b0 = (r[0] >> 8) & 0xFF;\nlet b1 = r[0] & 0xFF;\nlet b2 = (r[1] >> 8) & 0xFF;\nlet b3 = r[1] & 0xFF;\n\n// EXACT same as your old working code\nlet buf = Buffer.from([b2, b3, b0, b1]);\n\nmsg.payload = Number(buf.readFloatBE(0).toFixed(2));\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1050,
+        "y": 840,
+        "wires": [
+            [
+                "f8770a152bb93e0b"
+            ]
+        ]
+    },
+    {
+        "id": "de33c1861c88b866",
+        "type": "modbus-client",
+        "name": "RS485 ACM0",
+        "clienttype": "simpleser",
+        "bufferCommands": true,
+        "stateLogEnabled": false,
+        "queueLogEnabled": false,
+        "failureLogEnabled": true,
+        "tcpHost": "127.0.0.1",
+        "tcpPort": "502",
+        "tcpType": "DEFAULT",
+        "serialPort": "/dev/ttyACM0",
+        "serialType": "RTU",
+        "serialBaudrate": "9600",
+        "serialDatabits": "8",
+        "serialStopbits": "1",
+        "serialParity": "none",
+        "serialConnectionDelay": "100",
+        "serialAsciiResponseStartDelimiter": "0x3A",
+        "unit_id": "1",
+        "commandDelay": "1",
+        "clientTimeout": "2000",
+        "reconnectOnTimeout": false,
+        "reconnectTimeout": "2000",
+        "parallelUnitIdsAllowed": true,
+        "showErrors": true,
+        "showWarnings": true,
+        "showLogs": true
+    }
+]

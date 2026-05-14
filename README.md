@@ -19,14 +19,16 @@ All sensors communicate through RS485 Modbus RTU for reliable industrial communi
 
 ## Sensors Used
 
+## Sensors Used
+
 | RS485 ID | Sensor | Function |
 |---|---|---|
-| 1 | Temperature & Humidity Sensor #1 | Ambient monitoring |
-| 2 | Temperature & Humidity Sensor #2 | Ambient monitoring |
-| 3 | Temperature & Humidity Sensor #3 | Ambient monitoring |
-| 4 | 3-Phase Power Meter | Voltage, Current, Power |
-| 5 | Flow Meter | Flow rate & velocity |
-| 6 | Pressure & Temperature Sensor | Process pressure & temperature |
+| 1 | Pressure & Temperature Sensor | Process pressure & temperature |
+| 2 | Temperature & Humidity Sensor #1 | Ambient monitoring |
+| 3 | Temperature & Humidity Sensor #2 | Ambient monitoring |
+| 4 | Temperature & Humidity Sensor #3 | Ambient monitoring |
+| 11 | Flow Meter | Flow rate & velocity |
+| 12 | 3-Phase Power Meter | Voltage, Current, Power |
 
 ## Technologies
 - Node-RED

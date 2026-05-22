@@ -1,0 +1,249 @@
+[
+    {
+        "id": "d988929097730cca",
+        "type": "tab",
+        "label": "Flow Meter",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "7e8919561adb7505",
+        "type": "inject",
+        "z": "d988929097730cca",
+        "name": "10 Sec",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "10",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 140,
+        "y": 140,
+        "wires": [
+            [
+                "3dfc2a8dea1cd4c6"
+            ]
+        ]
+    },
+    {
+        "id": "3dfc2a8dea1cd4c6",
+        "type": "function",
+        "z": "d988929097730cca",
+        "name": "Modbus Request",
+        "func": "const SLAVE_ID = 1;\nconst START_ADDR = 0;\nconst NUM_REGS = 14;\n\nfunction crc16(buf) {\n    let crc = 0xFFFF;\n    for (let i = 0; i < buf.length; i++) {\n        crc ^= buf[i];\n        for (let j = 0; j < 8; j++) {\n            if (crc & 0x0001) crc = (crc >> 1) ^ 0xA001;\n            else crc >>= 1;\n        }\n    }\n    return crc;\n}\n\nlet buf = Buffer.alloc(6);\nbuf.writeUInt8(SLAVE_ID, 0);\nbuf.writeUInt8(0x03, 1);\nbuf.writeUInt16BE(START_ADDR, 2);\nbuf.writeUInt16BE(NUM_REGS, 4);\nlet crc = crc16(buf);\nlet request = Buffer.concat([buf, Buffer.from([crc & 0xFF, (crc >> 8) & 0xFF])]);\n\nmsg.payload = request;\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 350,
+        "y": 140,
+        "wires": [
+            [
+                "2b426fd584bfad88"
+            ]
+        ],
+        "outputLabels": [
+            "req 01 03 00 00 00 0E C4 0E"
+        ]
+    },
+    {
+        "id": "efc701094fa153ee",
+        "type": "function",
+        "z": "d988929097730cca",
+        "name": "Check byte validity",
+        "func": "// ===== FETCH DATA =====\nlet data = msg.payload;\n\n// ===== BASIC LENGTH CHECK =====\n// Expected: 1 (ID) + 1 (Func) + 1 (Byte Count) + 28 (Data) + 2 (CRC) = 33 bytes\nif (!data || data.length !== 33) {\n    node.error(\"Invalid message length: \" + (data ? data.length : \"null\"));\n    return null;\n}\n\n// ===== HEADER CHECK =====\nconst EXPECT_ID = 0x01;\nconst EXPECT_FUNC = 0x03;\nconst EXPECT_BYTES = 0x1C; // 28 bytes\n\nif (data[0] !== EXPECT_ID || data[1] !== EXPECT_FUNC || data[2] !== EXPECT_BYTES) {\n    node.error(\"Invalid header: \" + data.slice(0, 3).toString(\"hex\"));\n    return null;\n}\n\n// ===== CRC CHECK =====\nfunction calcCRC(buffer) {\n    let crc = 0xFFFF;\n\n    for (let i = 0; i < buffer.length - 2; i++) {\n        crc ^= buffer[i];\n\n        for (let j = 0; j < 8; j++) {\n            if (crc & 0x0001) {\n                crc >>= 1;\n                crc ^= 0xA001;\n            } else {\n                crc >>= 1;\n            }\n        }\n    }\n    return crc;\n}\n\n// Calculate CRC\nlet crcCalculated = calcCRC(data);\n\n// Extract received CRC (LOW byte first, HIGH byte second)\nlet crcReceived = data[data.length - 2] | (data[data.length - 1] << 8);\n\n// Compare\nif (crcCalculated !== crcReceived) {\n    node.error(\"CRC mismatch: calc=\" + crcCalculated + \" recv=\" + crcReceived);\n    return null;\n}\n\n// ===== PASS RESULT =====\nmsg.valid = true;\n\n// Optional: extract clean data (remove header + CRC)\nmsg.data = data.slice(3, data.length - 2);\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 770,
+        "y": 160,
+        "wires": [
+            [
+                "db96c71712ea33ec",
+                "e6c752c66a675f63",
+                "ee3819bef83ad312",
+                "5c568ad722ac326d",
+                "76a5998e96d037f8"
+            ]
+        ]
+    },
+    {
+        "id": "76a5998e96d037f8",
+        "type": "function",
+        "z": "d988929097730cca",
+        "name": "Flow Rate",
+        "func": "// ===== CONFIG =====\nconst INDEX = 1;\nconst flow_rate = \"Flow Rate\";\n\n// ===== FETCH DATA =====\nlet data = msg.payload;\n\n// ambil data lenght sahaja 14bytes hexa\nlet d = data.slice(3, data.length - 2);\n\n// ===== MSB SWAP 1234 to 3412 =====\nfunction toFloat(b0, b1, b2, b3) {\n    let buf = Buffer.from([b2, b3, b0, b1]); // MSB word swap\n    return buf.readFloatBE(0);\n}\n\n// ===== CALCULATE OFFSET UNTUK SETIAP 4BYTES DATA =====\nlet i = INDEX * 4;\n\n// ===== OUTPUT =====\nmsg.payload = {};\nmsg.payload[flow_rate] = toFloat(\n    d[i],\n    d[i+1],\n    d[i+2],\n    d[i+3]\n);\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1020,
+        "y": 60,
+        "wires": [
+            [
+                "97cb3038d6ce1059"
+            ]
+        ]
+    },
+    {
+        "id": "5c568ad722ac326d",
+        "type": "function",
+        "z": "d988929097730cca",
+        "name": "Flow Velocity",
+        "func": "// ===== CONFIG =====\nconst INDEX = 2;\nconst flow_velocity = \"Flow Velocity\";\n\n// ===== FETCH DATA =====\nlet data = msg.payload;\n\n// ambil data lenght sahaja 14bytes hexa\nlet d = data.slice(3, data.length - 2);\n\n// ===== MSB SWAP 1234 to 3412 =====\nfunction toFloat(b0, b1, b2, b3) {\n    let buf = Buffer.from([b2, b3, b0, b1]); // MSB word swap\n    return buf.readFloatBE(0);\n}\n\n// ===== CALCULATE OFFSET UNTUK SETIAP 4BYTES DATA =====\nlet i = INDEX * 4;\n\n// ===== OUTPUT =====\nmsg.payload = {};\nmsg.payload[flow_velocity] = toFloat(\n    d[i],\n    d[i+1],\n    d[i+2],\n    d[i+3]\n);\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1030,
+        "y": 120,
+        "wires": [
+            [
+                "97cb3038d6ce1059"
+            ]
+        ]
+    },
+    {
+        "id": "ee3819bef83ad312",
+        "type": "function",
+        "z": "d988929097730cca",
+        "name": "Sensor Voltage",
+        "func": "// ===== CONFIG =====\nconst INDEX = 3;\nconst sensor_voltage = \"Sensor Voltage\";\n\n// ===== FETCH DATA =====\nlet data = msg.payload;\n\n// ambil data lenght sahaja 14bytes hexa\nlet d = data.slice(3, data.length - 2);\n\n// ===== MSB SWAP 1234 to 3412 =====\nfunction toFloat(b0, b1, b2, b3) {\n    let buf = Buffer.from([b2, b3, b0, b1]); // MSB word swap\n    return buf.readFloatBE(0);\n}\n\n// ===== CALCULATE OFFSET UNTUK SETIAP 4BYTES DATA =====\nlet i = INDEX * 4;\n\n// ===== OUTPUT =====\nmsg.payload = {};\nmsg.payload[sensor_voltage] = toFloat(\n    d[i],\n    d[i+1],\n    d[i+2],\n    d[i+3]\n);\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1040,
+        "y": 180,
+        "wires": [
+            [
+                "97cb3038d6ce1059"
+            ]
+        ]
+    },
+    {
+        "id": "db96c71712ea33ec",
+        "type": "function",
+        "z": "d988929097730cca",
+        "name": "Total Flow >= 100",
+        "func": "// ===== CONFIG =====\nconst INDEX = 4;\nconst upper_total_flow = \"Total Flow >= 100\";\n\n// ===== FETCH DATA =====\nlet data = msg.payload;\n\n// ambil data lenght sahaja 14bytes hexa\nlet d = data.slice(3, data.length - 2);\n\n// ===== MSB SWAP 1234 to 3412 =====\nfunction toFloat(b0, b1, b2, b3) {\n    let buf = Buffer.from([b2, b3, b0, b1]); // MSB word swap\n    return buf.readFloatBE(0);\n}\n\n// ===== CALCULATE OFFSET UNTUK SETIAP 4BYTES DATA =====\nlet i = INDEX * 4;\n\n// ===== OUTPUT =====\nmsg.payload = {};\nmsg.payload[upper_total_flow] = toFloat(\n    d[i],\n    d[i+1],\n    d[i+2],\n    d[i+3]\n);\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1050,
+        "y": 240,
+        "wires": [
+            [
+                "97cb3038d6ce1059"
+            ]
+        ]
+    },
+    {
+        "id": "e6c752c66a675f63",
+        "type": "function",
+        "z": "d988929097730cca",
+        "name": "Total Flow < 100",
+        "func": "// ===== CONFIG =====\nconst INDEX = 5;\nconst lower_total_flow = \"Total Flow < 100\";\n\n// ===== FETCH DATA =====\nlet data = msg.payload;\n\n// ambil data lenght sahaja 14bytes hexa\nlet d = data.slice(3, data.length - 2);\n\n// ===== MSB SWAP 1234 to 3412 =====\nfunction toFloat(b0, b1, b2, b3) {\n    let buf = Buffer.from([b2, b3, b0, b1]); // MSB word swap\n    return buf.readFloatBE(0);\n}\n\n// ===== CALCULATE OFFSET UNTUK SETIAP 4BYTES DATA =====\nlet i = INDEX * 4;\n\n// ===== OUTPUT =====\nmsg.payload = {};\nmsg.payload[lower_total_flow] = toFloat(\n    d[i],\n    d[i+1],\n    d[i+2],\n    d[i+3]\n);\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1040,
+        "y": 300,
+        "wires": [
+            [
+                "97cb3038d6ce1059"
+            ]
+        ]
+    },
+    {
+        "id": "97cb3038d6ce1059",
+        "type": "debug",
+        "z": "d988929097730cca",
+        "name": "Nanti masuk DB",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1340,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "2b426fd584bfad88",
+        "type": "serial request",
+        "z": "d988929097730cca",
+        "name": "",
+        "serial": "0b97888578d3fd03",
+        "x": 570,
+        "y": 140,
+        "wires": [
+            [
+                "efc701094fa153ee",
+                "6b9d2e83de38e4c5"
+            ]
+        ]
+    },
+    {
+        "id": "6b9d2e83de38e4c5",
+        "type": "debug",
+        "z": "d988929097730cca",
+        "name": "debug 18",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 740,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "0b97888578d3fd03",
+        "type": "serial-port",
+        "name": "Flow Meter",
+        "serialport": "/dev/ttyUSB0",
+        "serialbaud": "9600",
+        "databits": "8",
+        "parity": "none",
+        "stopbits": "1",
+        "waitfor": "",
+        "dtr": "none",
+        "rts": "none",
+        "cts": "none",
+        "dsr": "none",
+        "newline": "\\n",
+        "bin": "bin",
+        "out": "char",
+        "addchar": "",
+        "responsetimeout": "10000"
+    }
+]

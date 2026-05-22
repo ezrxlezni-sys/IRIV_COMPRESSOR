@@ -1,0 +1,662 @@
+[
+    {
+        "id": "4a18f17d07927e2b",
+        "type": "tab",
+        "label": "Flow Meter",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "50593aba1694516a",
+        "type": "group",
+        "z": "4a18f17d07927e2b",
+        "style": {
+            "stroke": "#999999",
+            "stroke-opacity": "1",
+            "fill": "none",
+            "fill-opacity": "1",
+            "label": true,
+            "label-position": "nw",
+            "color": "#a4a4a4"
+        },
+        "nodes": [
+            "9e936b48a58217e9"
+        ],
+        "x": 134,
+        "y": 2939,
+        "w": 82,
+        "h": 82
+    },
+    {
+        "id": "a2bca873883da14e",
+        "type": "group",
+        "z": "4a18f17d07927e2b",
+        "style": {
+            "stroke": "#999999",
+            "stroke-opacity": "1",
+            "fill": "none",
+            "fill-opacity": "1",
+            "label": true,
+            "label-position": "nw",
+            "color": "#a4a4a4"
+        },
+        "nodes": [],
+        "x": 134,
+        "y": 3059,
+        "w": 40,
+        "h": 40
+    },
+    {
+        "id": "0b43fbcce253c544",
+        "type": "debug",
+        "z": "4a18f17d07927e2b",
+        "name": "DB Flow Meter",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1340,
+        "y": 680,
+        "wires": []
+    },
+    {
+        "id": "b86ef714415e42f2",
+        "type": "inject",
+        "z": "4a18f17d07927e2b",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "1",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "10",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 410,
+        "y": 300,
+        "wires": [
+            [
+                "9880f0728c0ec316"
+            ]
+        ]
+    },
+    {
+        "id": "9880f0728c0ec316",
+        "type": "modbus-getter",
+        "z": "4a18f17d07927e2b",
+        "name": "Flowmeter Flow Rate",
+        "showStatusActivities": false,
+        "showErrors": true,
+        "showWarnings": false,
+        "logIOActivities": false,
+        "unitid": "11",
+        "dataType": "HoldingRegister",
+        "adr": "2",
+        "quantity": "2",
+        "server": "de33c1861c88b866",
+        "useIOFile": false,
+        "ioFile": "",
+        "useIOForPayload": false,
+        "emptyMsgOnFail": false,
+        "keepMsgProperties": false,
+        "delayOnStart": false,
+        "startDelayTime": "1",
+        "x": 640,
+        "y": 300,
+        "wires": [
+            [
+                "1b5b84837a505068",
+                "573ba7c64d89e330"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "ac4c8faec43bc4e9",
+        "type": "modbus-getter",
+        "z": "4a18f17d07927e2b",
+        "name": "Flowmeter Flow Velocity",
+        "showStatusActivities": false,
+        "showErrors": true,
+        "showWarnings": false,
+        "logIOActivities": false,
+        "unitid": "11",
+        "dataType": "HoldingRegister",
+        "adr": "4",
+        "quantity": "2",
+        "server": "de33c1861c88b866",
+        "useIOFile": false,
+        "ioFile": "",
+        "useIOForPayload": false,
+        "emptyMsgOnFail": false,
+        "keepMsgProperties": false,
+        "delayOnStart": false,
+        "startDelayTime": "1",
+        "x": 650,
+        "y": 380,
+        "wires": [
+            [
+                "2fa21ef2624a34aa",
+                "4bdafc9a799a0407"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "cc9fce0b686ff59e",
+        "type": "modbus-getter",
+        "z": "4a18f17d07927e2b",
+        "name": "Flowmeter Sensor Voltage",
+        "showStatusActivities": false,
+        "showErrors": true,
+        "showWarnings": false,
+        "logIOActivities": false,
+        "unitid": "11",
+        "dataType": "HoldingRegister",
+        "adr": "6",
+        "quantity": "2",
+        "server": "de33c1861c88b866",
+        "useIOFile": false,
+        "ioFile": "",
+        "useIOForPayload": false,
+        "emptyMsgOnFail": false,
+        "keepMsgProperties": false,
+        "delayOnStart": false,
+        "startDelayTime": "1",
+        "x": 660,
+        "y": 460,
+        "wires": [
+            [
+                "21cdc4e8b6b79204",
+                "c7b61002a9a1f919"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "f9cde3ddcd68aa20",
+        "type": "modbus-getter",
+        "z": "4a18f17d07927e2b",
+        "name": "Flowmeter Upper Limit >=100",
+        "showStatusActivities": false,
+        "showErrors": true,
+        "showWarnings": false,
+        "logIOActivities": false,
+        "unitid": "11",
+        "dataType": "HoldingRegister",
+        "adr": "8",
+        "quantity": "2",
+        "server": "de33c1861c88b866",
+        "useIOFile": false,
+        "ioFile": "",
+        "useIOForPayload": false,
+        "emptyMsgOnFail": false,
+        "keepMsgProperties": false,
+        "delayOnStart": false,
+        "startDelayTime": "1",
+        "x": 670,
+        "y": 540,
+        "wires": [
+            [
+                "8f9bccb9fcc807a9",
+                "9bc23cf5f804b1d5"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "e3ece395402ccfbc",
+        "type": "modbus-getter",
+        "z": "4a18f17d07927e2b",
+        "name": "Flowmeter Lower Limit < 100",
+        "showStatusActivities": false,
+        "showErrors": true,
+        "showWarnings": false,
+        "logIOActivities": false,
+        "unitid": "11",
+        "dataType": "HoldingRegister",
+        "adr": "10",
+        "quantity": "2",
+        "server": "de33c1861c88b866",
+        "useIOFile": false,
+        "ioFile": "",
+        "useIOForPayload": false,
+        "emptyMsgOnFail": false,
+        "keepMsgProperties": false,
+        "delayOnStart": false,
+        "startDelayTime": "1",
+        "x": 660,
+        "y": 620,
+        "wires": [
+            [
+                "9e25ea69ac891927"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "1b5b84837a505068",
+        "type": "function",
+        "z": "4a18f17d07927e2b",
+        "name": "Swap byte CDAB",
+        "func": "let r = msg.payload.data || msg.payload;\n\n/*\nif (!Array.isArray(r) || r.length < 2) {\n    node.warn(\"Need 2 registers\");\n    return null;\n}\n\nnode.warn(r);\n*/\n\n// Split registers into bytes\nlet b0 = (r[0] >> 8) & 0xFF;\nlet b1 = r[0] & 0xFF;\nlet b2 = (r[1] >> 8) & 0xFF;\nlet b3 = r[1] & 0xFF;\n\n// EXACT same as your old working code\nlet buf = Buffer.from([b2, b3, b0, b1]);\n\nmsg.payload = Number(buf.readFloatBE(0).toFixed(2));\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 950,
+        "y": 300,
+        "wires": [
+            [
+                "0b43fbcce253c544",
+                "ef53bff5f39ebb31"
+            ]
+        ]
+    },
+    {
+        "id": "2fa21ef2624a34aa",
+        "type": "function",
+        "z": "4a18f17d07927e2b",
+        "name": "Swap byte CDAB",
+        "func": "let r = msg.payload.data || msg.payload;\n\n/*\nif (!Array.isArray(r) || r.length < 2) {\n    node.warn(\"Need 2 registers\");\n    return null;\n}\n\nnode.warn(r);\n*/\n\n// Split registers into bytes\nlet b0 = (r[0] >> 8) & 0xFF;\nlet b1 = r[0] & 0xFF;\nlet b2 = (r[1] >> 8) & 0xFF;\nlet b3 = r[1] & 0xFF;\n\n// EXACT same as your old working code\nlet buf = Buffer.from([b2, b3, b0, b1]);\n\nmsg.payload = Number(buf.readFloatBE(0).toFixed(2));\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 950,
+        "y": 380,
+        "wires": [
+            [
+                "0b43fbcce253c544",
+                "97e609f6520dfa40"
+            ]
+        ]
+    },
+    {
+        "id": "21cdc4e8b6b79204",
+        "type": "function",
+        "z": "4a18f17d07927e2b",
+        "name": "Swap byte CDAB",
+        "func": "let r = msg.payload.data || msg.payload;\n\n/*\nif (!Array.isArray(r) || r.length < 2) {\n    node.warn(\"Need 2 registers\");\n    return null;\n}\n\nnode.warn(r);\n*/\n\n// Split registers into bytes\nlet b0 = (r[0] >> 8) & 0xFF;\nlet b1 = r[0] & 0xFF;\nlet b2 = (r[1] >> 8) & 0xFF;\nlet b3 = r[1] & 0xFF;\n\n// EXACT same as your old working code\nlet buf = Buffer.from([b2, b3, b0, b1]);\n\nmsg.payload = Number(buf.readFloatBE(0).toFixed(2));\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 950,
+        "y": 460,
+        "wires": [
+            [
+                "0b43fbcce253c544",
+                "eb780dfef331c959"
+            ]
+        ]
+    },
+    {
+        "id": "8f9bccb9fcc807a9",
+        "type": "function",
+        "z": "4a18f17d07927e2b",
+        "name": "Swap byte CDAB",
+        "func": "let r = msg.payload.data || msg.payload;\n\n/*\nif (!Array.isArray(r) || r.length < 2) {\n    node.warn(\"Need 2 registers\");\n    return null;\n}\n\nnode.warn(r);\n*/\n\n// Split registers into bytes\nlet b0 = (r[0] >> 8) & 0xFF;\nlet b1 = r[0] & 0xFF;\nlet b2 = (r[1] >> 8) & 0xFF;\nlet b3 = r[1] & 0xFF;\n\n// EXACT same as your old working code\nlet buf = Buffer.from([b2, b3, b0, b1]);\n\nmsg.payload = Number(buf.readFloatBE(0).toFixed(2));\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 950,
+        "y": 540,
+        "wires": [
+            [
+                "0b43fbcce253c544",
+                "45376ec1c24a709d"
+            ]
+        ]
+    },
+    {
+        "id": "9e25ea69ac891927",
+        "type": "function",
+        "z": "4a18f17d07927e2b",
+        "name": "Swap byte CDAB",
+        "func": "let r = msg.payload.data || msg.payload;\n\n/*\nif (!Array.isArray(r) || r.length < 2) {\n    node.warn(\"Need 2 registers\");\n    return null;\n}\n\nnode.warn(r);\n*/\n\n// Split registers into bytes\nlet b0 = (r[0] >> 8) & 0xFF;\nlet b1 = r[0] & 0xFF;\nlet b2 = (r[1] >> 8) & 0xFF;\nlet b3 = r[1] & 0xFF;\n\n// EXACT same as your old working code\nlet buf = Buffer.from([b2, b3, b0, b1]);\n\nmsg.payload = Number(buf.readFloatBE(0).toFixed(2));\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 950,
+        "y": 620,
+        "wires": [
+            [
+                "0b43fbcce253c544",
+                "e7039128e33b95d6"
+            ]
+        ]
+    },
+    {
+        "id": "ef53bff5f39ebb31",
+        "type": "ui_gauge",
+        "z": "4a18f17d07927e2b",
+        "name": "",
+        "group": "8664b5a968affcfb",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "Flow Rate",
+        "label": "units",
+        "format": "{{value}}",
+        "min": 0,
+        "max": 10,
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 1320,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "97e609f6520dfa40",
+        "type": "ui_gauge",
+        "z": "4a18f17d07927e2b",
+        "name": "",
+        "group": "8664b5a968affcfb",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "Flow Velocity",
+        "label": "units",
+        "format": "{{value}}",
+        "min": 0,
+        "max": 10,
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 1330,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "eb780dfef331c959",
+        "type": "ui_gauge",
+        "z": "4a18f17d07927e2b",
+        "name": "",
+        "group": "8664b5a968affcfb",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "Sensor Voltage",
+        "label": "V",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "5",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 1340,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "45376ec1c24a709d",
+        "type": "ui_gauge",
+        "z": "4a18f17d07927e2b",
+        "name": "",
+        "group": "8664b5a968affcfb",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "Upper Limit",
+        "label": "units",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "9999",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 1330,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "e7039128e33b95d6",
+        "type": "ui_gauge",
+        "z": "4a18f17d07927e2b",
+        "name": "",
+        "group": "8664b5a968affcfb",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "Lower Limit",
+        "label": "units",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "99",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 1330,
+        "y": 620,
+        "wires": []
+    },
+    {
+        "id": "9e936b48a58217e9",
+        "type": "link in",
+        "z": "4a18f17d07927e2b",
+        "g": "50593aba1694516a",
+        "name": "From msg.topic temp",
+        "links": [
+            "70a21f4533a6ed3c",
+            "2d7d4ee4770e5007",
+            "6ec0005a1c47fc1d"
+        ],
+        "x": 175,
+        "y": 2980,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "573ba7c64d89e330",
+        "type": "delay",
+        "z": "4a18f17d07927e2b",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "100",
+        "timeoutUnits": "milliseconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 410,
+        "y": 380,
+        "wires": [
+            [
+                "ac4c8faec43bc4e9"
+            ]
+        ]
+    },
+    {
+        "id": "4bdafc9a799a0407",
+        "type": "delay",
+        "z": "4a18f17d07927e2b",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "100",
+        "timeoutUnits": "milliseconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 410,
+        "y": 460,
+        "wires": [
+            [
+                "cc9fce0b686ff59e"
+            ]
+        ]
+    },
+    {
+        "id": "c7b61002a9a1f919",
+        "type": "delay",
+        "z": "4a18f17d07927e2b",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "100",
+        "timeoutUnits": "milliseconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 410,
+        "y": 540,
+        "wires": [
+            [
+                "f9cde3ddcd68aa20"
+            ]
+        ]
+    },
+    {
+        "id": "9bc23cf5f804b1d5",
+        "type": "delay",
+        "z": "4a18f17d07927e2b",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "100",
+        "timeoutUnits": "milliseconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 410,
+        "y": 620,
+        "wires": [
+            [
+                "e3ece395402ccfbc"
+            ]
+        ]
+    },
+    {
+        "id": "de33c1861c88b866",
+        "type": "modbus-client",
+        "name": "RS485 ACM0",
+        "clienttype": "simpleser",
+        "bufferCommands": true,
+        "stateLogEnabled": false,
+        "queueLogEnabled": false,
+        "failureLogEnabled": true,
+        "tcpHost": "127.0.0.1",
+        "tcpPort": "502",
+        "tcpType": "DEFAULT",
+        "serialPort": "/dev/ttyACM0",
+        "serialType": "RTU",
+        "serialBaudrate": "9600",
+        "serialDatabits": "8",
+        "serialStopbits": "1",
+        "serialParity": "none",
+        "serialConnectionDelay": "100",
+        "serialAsciiResponseStartDelimiter": "0x3A",
+        "unit_id": "1",
+        "commandDelay": "1",
+        "clientTimeout": "2000",
+        "reconnectOnTimeout": false,
+        "reconnectTimeout": "2000",
+        "parallelUnitIdsAllowed": true,
+        "showErrors": true,
+        "showWarnings": true,
+        "showLogs": true
+    },
+    {
+        "id": "8664b5a968affcfb",
+        "type": "ui_group",
+        "name": "Flow Meter",
+        "tab": "0c7342dfcde2efc0",
+        "order": 5,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "0c7342dfcde2efc0",
+        "type": "ui_tab",
+        "name": "Sensors",
+        "icon": "dashboard",
+        "order": 4,
+        "disabled": false,
+        "hidden": false
+    }
+]

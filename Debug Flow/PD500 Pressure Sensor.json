@@ -1,0 +1,237 @@
+[
+    {
+        "id": "30c480cdacae5e10",
+        "type": "tab",
+        "label": "PD500 Pressure Sensor",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "c803df7b548153ab",
+        "type": "modbus-getter",
+        "z": "30c480cdacae5e10",
+        "name": "Temperature PD500",
+        "showStatusActivities": true,
+        "showErrors": true,
+        "showWarnings": true,
+        "logIOActivities": false,
+        "unitid": "1",
+        "dataType": "HoldingRegister",
+        "adr": "34",
+        "quantity": "2",
+        "server": "de33c1861c88b866",
+        "useIOFile": false,
+        "ioFile": "",
+        "useIOForPayload": false,
+        "emptyMsgOnFail": false,
+        "keepMsgProperties": true,
+        "delayOnStart": false,
+        "startDelayTime": "1",
+        "x": 600,
+        "y": 160,
+        "wires": [
+            [
+                "b8eebc98299ec892",
+                "53dadb87e01923b2"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "e993ef35b22d81cf",
+        "type": "inject",
+        "z": "30c480cdacae5e10",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "1",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "10",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 170,
+        "y": 160,
+        "wires": [
+            [
+                "5fb13ae432c66a12"
+            ]
+        ]
+    },
+    {
+        "id": "cbc405ee56174810",
+        "type": "debug",
+        "z": "30c480cdacae5e10",
+        "name": "DB PD500 Pressure Sensor",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1080,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "b8eebc98299ec892",
+        "type": "function",
+        "z": "30c480cdacae5e10",
+        "name": "Temperature",
+        "func": "let r = msg.payload?.data || msg.payload;\n\nif (!Array.isArray(r) || r.length < 2) {\n    node.warn(\"No 2 registers received: \" + JSON.stringify(msg.payload));\n    return null;\n}\n\nlet buf = Buffer.alloc(4);\n\n// CDAB / word swap\nbuf.writeUInt16BE(r[1], 0);\nbuf.writeUInt16BE(r[0], 2);\n\nmsg.payload = buf.readFloatBE(0);\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 830,
+        "y": 160,
+        "wires": [
+            [
+                "cbc405ee56174810"
+            ]
+        ]
+    },
+    {
+        "id": "bef1f02fb82c4b5f",
+        "type": "modbus-getter",
+        "z": "30c480cdacae5e10",
+        "name": "Pressure PD500",
+        "showStatusActivities": true,
+        "showErrors": true,
+        "showWarnings": true,
+        "logIOActivities": false,
+        "unitid": "1",
+        "dataType": "HoldingRegister",
+        "adr": "36",
+        "quantity": "2",
+        "server": "de33c1861c88b866",
+        "useIOFile": false,
+        "ioFile": "",
+        "useIOForPayload": false,
+        "emptyMsgOnFail": false,
+        "keepMsgProperties": true,
+        "delayOnStart": false,
+        "startDelayTime": "1",
+        "x": 580,
+        "y": 240,
+        "wires": [
+            [
+                "427c47fef4802674"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "53dadb87e01923b2",
+        "type": "delay",
+        "z": "30c480cdacae5e10",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "100",
+        "timeoutUnits": "milliseconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 370,
+        "y": 240,
+        "wires": [
+            [
+                "bef1f02fb82c4b5f"
+            ]
+        ]
+    },
+    {
+        "id": "427c47fef4802674",
+        "type": "function",
+        "z": "30c480cdacae5e10",
+        "name": "Pressure",
+        "func": "let r = msg.payload?.data || msg.payload;\n\nif (!Array.isArray(r) || r.length < 2) {\n    node.warn(\"No 2 registers received: \" + JSON.stringify(msg.payload));\n    return null;\n}\n\nlet buf = Buffer.alloc(4);\n\n// CDAB / word swap\nbuf.writeUInt16BE(r[1], 0);\nbuf.writeUInt16BE(r[0], 2);\n\nmsg.payload = buf.readFloatBE(0) * 10;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 820,
+        "y": 240,
+        "wires": [
+            [
+                "cbc405ee56174810"
+            ]
+        ]
+    },
+    {
+        "id": "5fb13ae432c66a12",
+        "type": "delay",
+        "z": "30c480cdacae5e10",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "100",
+        "timeoutUnits": "milliseconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 370,
+        "y": 160,
+        "wires": [
+            [
+                "c803df7b548153ab"
+            ]
+        ]
+    },
+    {
+        "id": "de33c1861c88b866",
+        "type": "modbus-client",
+        "name": "RS485 ACM0",
+        "clienttype": "simpleser",
+        "bufferCommands": true,
+        "stateLogEnabled": false,
+        "queueLogEnabled": false,
+        "failureLogEnabled": true,
+        "tcpHost": "127.0.0.1",
+        "tcpPort": "502",
+        "tcpType": "DEFAULT",
+        "serialPort": "/dev/ttyACM0",
+        "serialType": "RTU",
+        "serialBaudrate": "9600",
+        "serialDatabits": "8",
+        "serialStopbits": "1",
+        "serialParity": "none",
+        "serialConnectionDelay": "100",
+        "serialAsciiResponseStartDelimiter": "0x3A",
+        "unit_id": "1",
+        "commandDelay": "1",
+        "clientTimeout": "2000",
+        "reconnectOnTimeout": false,
+        "reconnectTimeout": "2000",
+        "parallelUnitIdsAllowed": true,
+        "showErrors": true,
+        "showWarnings": true,
+        "showLogs": true
+    }
+]

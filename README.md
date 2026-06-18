@@ -19,8 +19,6 @@ All sensors communicate through RS485 Modbus RTU for reliable industrial communi
 
 ## Sensors Used
 
-## Sensors Used
-
 | RS485 ID | Sensor | Function |
 |---|---|---|
 | 1 | Pressure & Temperature Sensor | Process pressure & temperature |

@@ -194,3 +194,18 @@ Designed for:
 - Industrial IoT Applications
 
 ---
+
+Link to login to NodeRed for coding:
+192.168.1.41:1880
+user: admin
+password: iriv_compressor
+
+Link to login to NodeRed Dashboard for monitoring:
+192.168.1.41:1880/ui
+
+Link to login into the database:
+192.168.1.41/phpmyadmin
+user: root
+password: raspberry
+
+---
